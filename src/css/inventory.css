@@ -861,16 +861,14 @@ tr.highlighted-shared.viewed-row {
   text-shadow: 0 0 2px #0a0a0a;
 }
 
-/* Precio Financiado - Inline dentro de la columna PRECIO (minimalist design) */
+/* Precio Financiado - Inline dentro de la columna PRECIO (mismo diseño que precio-actual) */
 .precio-financiado-inline {
   display: block;
   color: var(--brand-purple);
   font-weight: 700;
-  font-size: 0.85rem;
-  line-height: 1;
-  margin-bottom: 0.35rem;
-  letter-spacing: 0.3px;
-  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
 }
 
 /* Precio Cell - Contenedor de precios con financiado inline */

@@ -1145,11 +1145,13 @@
         // ==========================================
         // UTILIDAD: CALCULO PRECIO FINANCIADO
         // ==========================================
-        // Calcula cuota mensual de 60 meses al 18% anual
+        // Calcula cuota mensual de 60 meses al 18% anual (con enganche del 20%)
         _calculateFinancedPrice: function(precio) {
-            var tasaMensual = 0.18 / 12; // 1.5% mensual
+            var enganches = precio * 0.20;        // 20% inicial
+            var saldoFinanciado = precio - enganches;  // 80% a financiar
+            var tasaMensual = 0.18 / 12;          // 1.5% mensual
             var numMeses = 60;
-            var meses = (precio * tasaMensual * Math.pow(1 + tasaMensual, numMeses)) / 
+            var meses = (saldoFinanciado * tasaMensual * Math.pow(1 + tasaMensual, numMeses)) / 
                         (Math.pow(1 + tasaMensual, numMeses) - 1);
             return Math.round(meses);
         },
@@ -1622,12 +1624,28 @@
         setGaleriaListeners: function() {
             console.log('[INVENTARIO-V12] 🖼️ Configurando listeners de galería...');
 
+            // Listener 1: Click en fila (vehicle-clickable) abre galería
             document.querySelectorAll('.vehicle-clickable').forEach(function(td) {
                 td.onclick = null;
 
                 td.onclick = function(e) {
                     var productId = td.closest('tr').getAttribute('data-id');
                     var imgs = td.getAttribute('data-images');
+
+                    if (imgs && imgs.length > 0 && productId) {
+                        InventarioBigData.openLightboxGallery(productId);
+                    }
+                    e.stopPropagation();
+                };
+            });
+
+            // Listener 2: Click en botón de fotos (.photo-icon-btn) abre galería
+            document.querySelectorAll('.photo-icon-btn').forEach(function(btn) {
+                btn.onclick = null;
+
+                btn.onclick = function(e) {
+                    var productId = btn.getAttribute('data-id') || btn.closest('tr').getAttribute('data-id');
+                    var imgs = btn.closest('tr').querySelector('[data-images]').getAttribute('data-images');
 
                     if (imgs && imgs.length > 0 && productId) {
                         InventarioBigData.openLightboxGallery(productId);
