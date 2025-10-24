@@ -1744,29 +1744,6 @@ tr.highlighted-shared.viewed-row {
 .invisible { visibility: hidden !important; }
 .visible { visibility: visible !important; }
 
-:root {
-  /* Variables de color principales */
-  --brand-purple: #262633;
-  --brand-dark-purple: #4c1d95;
-  --brand-black: #181425;
-  --brand-grey: #262633;
-  --white: #f9fafb;
-  --text-primary: #f9fafb;
-  --text-secondary: #d1d5db;
-  --text-muted: #a1a1aa;
-  --glass-bg: rgba(19, 17, 34, 0.80);
-  --glass-card: rgba(29, 25, 59, 0.75);
-  --shadow-lg: 0 8px 32px rgba(124,58,237,0.24), 0 2px 8px #0008;
-  --shadow-md: 0 4px 12px rgba(124,58,237,0.18), 0 1px 4px #0006;
-  --shadow-soft: 0 2px 8px rgba(124,58,237,0.13), 0 1px 4px #0002;
-  --radius-layout: 18px;
-  --precio-actual: #059669;
-  --precio-original: #ef4444;
-  --overlay-subtle: rgba(41, 36, 84, 0.17);
-  --ripple-color: rgba(124,58,237,0.13);
-  --font-main: 'Poppins', 'Montserrat', Arial, sans-serif;
-}
-
 /* =====================
    POPUP SEGURIDAD Y PRIVACIDAD
    ===================== */
