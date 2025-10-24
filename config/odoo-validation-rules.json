@@ -1,0 +1,167 @@
+{
+  "domain": "Odoo",
+  "contexts": ["XML", "JavaScript_inline", "CSS_inline", "QWeb", "Bootstrap"],
+  "global_constraint": "All code within .xml files must be valid XML. Escape XML special characters in all embedded JavaScript and CSS.",
+  "rules": [
+    {
+      "id": "COMMENT_001",
+      "context": "Odoo_Template_XML",
+      "description": "Only HTML comments allowed. JavaScript-style comments (//, /* */) are prohibited.",
+      "examples": {
+        "allowed": "<!-- HTML comment -->",
+        "prohibited": "// Comment, /* Block comment */"
+      }
+    },
+    {
+      "id": "OPERATOR_001",
+      "context": "JavaScript_in_XML",
+      "target": "&& (Logical AND)",
+      "requirement": "Must be written as &amp;amp;&amp;amp; in XML.",
+      "examples": {
+        "correct": "if (a &amp;amp;&amp;amp; b)",
+        "incorrect": "if (a && b)"
+      }
+    },
+    {
+      "id": "OPERATOR_002",
+      "context": ["JavaScript_in_XML", "Text_Nodes"],
+      "target": "& (Ampersand)",
+      "requirement": "Always escape as &amp;amp;.",
+      "examples": {
+        "correct": "a &amp;amp; b",
+        "incorrect": "a & b"
+      }
+    },
+    {
+      "id": "OPERATOR_003",
+      "context": "JavaScript_in_XML",
+      "target": "|| (Logical OR)",
+      "requirement": "No escape needed.",
+      "examples": {
+        "correct": "if (a || b)"
+      }
+    },
+    {
+      "id": "COMPARISON_001",
+      "context": ["JavaScript_in_XML", "HTML_Attributes"],
+      "target": "< (Less than)",
+      "requirement": "Escape as &amp;lt;.",
+      "examples": {
+        "correct": "if (price &amp;lt; 1000)",
+        "incorrect": "if (price < 1000)"
+      }
+    },
+    {
+      "id": "COMPARISON_002",
+      "context": ["JavaScript_in_XML", "HTML_Attributes"],
+      "target": "> (Greater than)",
+      "requirement": "Escape as &amp;gt;.",
+      "examples": {
+        "correct": "if (items &amp;gt; 5)",
+        "incorrect": "if (items > 5)"
+      }
+    },
+    {
+      "id": "COMPARISON_003",
+      "context": ["JavaScript_in_XML", "HTML_Attributes"],
+      "target": ">= (Greater than or equal to)",
+      "requirement": "Escape as &amp;gt;=.",
+      "examples": {
+        "correct": "if (value &amp;gt;= 1000)",
+        "incorrect": "if (value >= 1000)"
+      }
+    },
+    {
+      "id": "COMPARISON_004",
+      "context": ["JavaScript_in_XML", "HTML_Attributes"],
+      "target": "<= (Less than or equal to)",
+      "requirement": "Escape as &amp;lt;=.",
+      "examples": {
+        "correct": "if (value &amp;lt;= 500)",
+        "incorrect": "if (value <= 500)"
+      }
+    },
+    {
+      "id": "SYMBOL_001",
+      "context": "JavaScript_in_XML",
+      "target": "% (Percent sign)",
+      "requirement": "Do not use in JavaScript numerical assignments.",
+      "examples": {
+        "correct": "var x = 50",
+        "incorrect": "var x = 50%"
+      }
+    },
+    {
+      "id": "SYMBOL_002",
+      "context": ["CSS", "CSS-in-XML"],
+      "target": "% (Percent sign)",
+      "requirement": "Allowed in CSS, no escape needed.",
+      "examples": {
+        "correct": "width: 100%;"
+      }
+    },
+    {
+      "id": "JS_SYNTAX_001",
+      "context": "JavaScript_in_XML",
+      "description": "Prohibited modern JavaScript constructs due to XML parsing conflicts: template literals (`), backticks, @decorators, #private fields."
+    },
+    {
+      "id": "STRING_001",
+      "context": "JavaScript_in_XML",
+      "description": "It is recommended to use single quotes for JavaScript strings to avoid conflict with HTML/XML double quotes.",
+      "examples": {
+        "recommended": "var s = 'text';",
+        "not_recommended": "var s = \"text\";"
+      }
+    },
+    {
+      "id": "HTML_GEN_001",
+      "context": "JavaScript_in_XML",
+      "description": "Do not use backslash (\\) to escape quotes in HTML strings for innerHTML. Use double quotes directly.",
+      "examples": {
+        "correct": "resultado = \"&lt;span style=\\\"color:red;\\\"&gt;...&lt;/span&gt;\";",
+        "incorrect": "resultado = \"<span style=\\\"color:red;\\\">...</span>\";"
+      }
+    },
+    {
+      "id": "XML_STRUCTURE_001",
+      "context": "Odoo_Template_XML",
+      "description": "Mandatory QWeb website template structure in Odoo. The hierarchy must be: <t t-name=\"website.your-template-name\"> <t t-call=\"website.layout\"> [t-set=\"head\"] [block content]",
+      "required_hierarchy": [
+        "<t t-name=\"website.your-template-name\">",
+        "  <t t-call=\"website.layout\">",
+        "    <t t-set=\"head\"> <!-- for <script>, <style>, <meta> -->",
+        "    <div> or block content"
+      ]
+    }
+  ],
+  "validation_patterns": [
+    {
+      "name": "Unescaped &&",
+      "regex": "/&&(?!(amp;))/g",
+      "replacement": "&amp;amp;&amp;amp;"
+    },
+    {
+      "name": "Unescaped <",
+      "regex": "/(<)(?![a-zA-Z/?!])/g",
+      "replacement": "&amp;lt;"
+    },
+    {
+      "name": "Unescaped >",
+      "regex": "/>/g",
+      "replacement": "&amp;gt;"
+    },
+    {
+      "name": "Unescaped &",
+      "regex": "/&(?!amp;|lt;|gt;|quot;|apos;)/g",
+      "replacement": "&amp;amp;"
+    }
+  ],
+  "error_symptoms": [
+    "Blank web page",
+    "HTTP 500 Internal Server Error",
+    "\"Template not found\" error in logs",
+    "\"XML parsing errors\" in logs",
+    "\"JavaScript execution failed\" in browser console"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "name": "seminuevosmex-inventory-app",
+  "version": "1.0.0",
+  "description": "Professional inventory management system for used vehicles (seminuevos) - Odoo QWeb + Bootstrap 5",
+  "author": "Camilo Pimor <camilo@seminuevosmex.net>",
+  "license": "PROPRIETARY",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/p1mor/seminuevosmex-inventory-app.git",
+    "branch": "main"
+  },
+  "keywords": [
+    "inventory",
+    "automobiles",
+    "seminuevos",
+    "odoo",
+    "qweb",
+    "bootstrap",
+    "dashboard",
+    "responsive",
+    "glass-morphism"
+  ],
+  "main": "src/js/inventory.js",
+  "files": [
+    "src/",
+    "config/",
+    "docs/",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {
+    "start": "http-server src/ -p 8000 -c-1",
+    "dev": "http-server src/ -p 8000 -c-1 --cors",
+    "lint:html": "htmlhint 'src/**/*.html'",
+    "lint:css": "stylelint 'src/**/*.css'",
+    "lint:js": "eslint 'src/**/*.js'",
+    "lint": "npm run lint:html && npm run lint:css && npm run lint:js",
+    "format": "prettier --write 'src/**/*.{html,css,js}'",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "cleancss -o dist/inventory.min.css src/css/inventory.css",
+    "build:js": "uglifyjs src/js/inventory.js -o dist/inventory.min.js -c -m",
+    "test": "echo 'No automated tests configured yet'",
+    "docs": "echo 'Documentation generated - see /docs directory'",
+    "version": "echo 'Current version: 1.0.0'",
+    "validate": "npm run lint && npm run test"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "htmlhint": "^1.1.4",
+    "stylelint": "^14.0.0",
+    "prettier": "^3.0.0",
+    "clean-css-cli": "^5.6.0",
+    "uglify-js": "^3.17.0",
+    "http-server": "^14.1.0"
+  },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions",
+    "iOS >= 14",
+    "Android >= 8"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords:tech": [
+    "Odoo 14+",
+    "QWeb Templates",
+    "Bootstrap 5",
+    "Glass Morphism",
+    "Responsive Design",
+    "ARIA Accessibility",
+    "Web Share API",
+    "SVG Icons"
+  ],
+  "documentation": {
+    "architecture": "docs/ARCHITECTURE.md",
+    "api": "docs/API_REFERENCE.md",
+    "styling": "docs/STYLING_GUIDE.md",
+    "synchronization": "docs/SYNC_REQUIREMENTS.md",
+    "deployment": "docs/DEPLOYMENT.md",
+    "readme": "README.md"
+  },
+  "project": {
+    "name": "SeminuevosMex Inventory App",
+    "description": "Responsive inventory dashboard for used vehicle sales",
+    "status": "Production",
+    "lastUpdated": "2025-10-24",
+    "maintainer": "Camilo Pimor",
+    "contact": "camilo@seminuevosmex.net",
+    "website": "https://www.seminuevosmex.net",
+    "repository": "https://github.com/p1mor/seminuevosmex-inventory-app"
+  }
+}

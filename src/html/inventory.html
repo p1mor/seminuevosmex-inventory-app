@@ -1,0 +1,1033 @@
+<!-- SEMINUEVOSMEX INVENTARIO – VERSIÓN 16.0 (2025-09-08) – ODOO QWEB/BOOTSTRAP
+Sincronía: [HTML: v15-html-inventario-seminuevosmex.net-inventario.html] + [CSS: v15-css-inventario-seminuevosmex.net-inventario.css] + [JS: v15-javascript-inventario-seminuevosmex.net-inventario.js]
+Entorno: Odoo QWeb/SaaS (Bootstrap nativo) – Cumple rules y nomenclatura Odoo/Bootstrap
+
+FUNCIÓN PRINCIPAL:
+ - Dashboard responsive de seminuevos (Mobile & Desktop Web)
+ - Puntos de anclaje y data-attributes para render dinámico desde InventarioBigData
+ - Estructura accesible (ARIA) para modales, popovers y galería
+ - SVG sprite centralizado para iconografía moderna
+ - Mantener sincronía EXACTA con los archivos CSS/JS referenciados
+
+ÍNDICE DE MARCADO - HTML v16.0:
+ - Metadatos y SEO (meta, OG, Twitter, Schema.org)
+ - Fuentes y enlaces estáticos (CSS/JS) — mantener versiones sincronizadas
+ - SVG SPRITE SYSTEM — símbolos reutilizables
+ - HERO / PORTADA — header visual del dashboard
+ - CONTROLES DASHBOARD — búsqueda, orden, filtros, tags
+ - VISTA DESKTOP — tabla #tabla-inventario con puntos de inserción tbody
+ - VISTA MÓVIL — tabla móvil con #mobile-table-body
+ - FILTRO POPOVER — contenedor #filter-popover para opciones dinámicas
+ - PUNTOS DE ACCESIBILIDAD — add roles y aria-* en componentes dinámicos
+ - NOTA: No usar elementos autocerrados en HTML (ej. <div/>). Usar cierre explícito para compatibilidad QWeb.
+
+RECOMENDACIONES:
+ - Al modificar columnas o data-* names, actualizar simultáneamente JS y CSS.
+ - Mantener clases utilitarias (glass-bg, glass-card) para coherencia visual.
+ - Validar cambios en Odoo QWeb (vista previa en entorno de prueba).
+ - Actualizar la versión de CSS a v16.0 para mantener la sincronía.
+
+AUTOR: Camilo Pimor -->
+<t t-name="website.inventario-mexico-seminuevosmexnet">
+    <t t-call="website.layout">
+        <t t-set="head">
+            <title>Autos Seminuevos Certificados en Puebla | IA | SeminuevosMex.Net</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <meta name="description" content="Explora miles de autos seminuevos certificados en Puebla. Usa nuestro Asistente de IA para tu búsqueda personalizada y obtén financiamiento al instante. ¡Encuentra tu auto ideal hoy!"/>
+            <meta name="keywords" content="seminuevos puebla, autos seminuevos puebla, seminuevos certificados puebla, comprar auto usado puebla, financiamiento automotriz puebla, agencias de seminuevos puebla"/>
+            <link rel="canonical" href="https://www.seminuevosmex.net"/>
+
+            <meta property="og:title" content="Encuentra tu Auto Ideal en Puebla con Inteligencia Artificial | SeminuevosMex.Net"/>
+            <meta property="og:description" content="No solo busques, ¡encuentra! Accede a miles de seminuevos certificados, usa nuestro asistente de IA y obtén tu crédito automotriz en minutos."/>
+            <meta property="og:image" content="https://pub-9b40b6bee2fc4ab1a479945f49263f10.r2.dev/Portada-Seminuevosmex.Net-Inventario-Autos-Seminuevos-Mexico-0043412.jpg"/>
+            <meta property="og:image:width" content="1200"/>
+            <meta property="og:image:height" content="630"/>
+            <meta property="og:url" content="https://www.seminuevosmex.net"/>
+            <meta property="og:site_name" content="SeminuevosMex.Net"/>
+            <meta property="og:type" content="website"/>
+            <meta property="og:locale" content="es_MX"/>
+
+            <meta name="twitter:card" content="summary_large_image"/>
+            <meta name="twitter:site" content="@SeminuevosMexNet"/>
+            <meta name="twitter:creator" content="@SeminuevosMexNet"/>
+            <meta name="twitter:title" content="Encuentra tu Auto Ideal en Puebla con Inteligencia Artificial | SeminuevosMex.Net"/>
+            <meta name="twitter:description" content="No solo busques, ¡encuentra! Accede a miles de seminuevos certificados, usa nuestro asistente de IA y obtén tu crédito automotriz en minutos."/>
+            <meta name="twitter:image" content="https://pub-9b40b6bee2fc4ab1a479945f49263f10.r2.dev/Portada-Seminuevosmex.Net-Inventario-Autos-Seminuevos-Mexico-0043412.jpg"/>
+
+            <!-- Poppins Font for modern design -->
+            <link rel="preconnect" href="https://fonts.googleapis.com"/>
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+            <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+            <!-- Tawk.to Integration -->
+            <script type="text/javascript">var Tawk_API=Tawk_API||{},Tawk_LoadStart=new Date();(function(){var s1=document.createElement('script'),s0=document.getElementsByTagName('script')[0];s1.async=true;s1.src='https://embed.tawk.to/68b1b865721af15d8752aa66/1j3r3gjvk';s1.charset='UTF-8';s1.setAttribute('crossorigin','*');s0.parentNode.insertBefore(s1,s0);})();</script>
+            <!-- Schema.org data -->
+            <script type="application/ld+json">
+                {
+                "@context": "https://schema.org",
+                "@type": "AutoDealer",
+                "@id": "https://www.seminuevosmex.net/#AutoDealer",
+                "name": "Inventario de Autos Seminuevos Certificados en México | SeminuevosMex.Net",
+                "description": "La base de datos de autos seminuevos más completa de México. Inicia tu búsqueda en Puebla con nuestro asistente de IA y encuentra tu vehículo ideal en el inventario certificado de las mejores agencias.",
+                "url": "https://www.seminuevosmex.net/",
+                "telephone": "+522215841832",
+                "email": "contacto@seminuevosmex.net",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "P.º Sinfonía 2, Lomas de Angelópolis",
+                    "addressLocality": "San Bernardino Tlaxcalancingo",
+                    "addressRegion": "Puebla",
+                    "postalCode": "72830",
+                    "addressCountry": "MX"
+                },
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": "19.0016",
+                    "longitude": "-98.2833"
+                },
+                "openingHoursSpecification": [
+                    {
+                    "@type": "OpeningHoursSpecification",
+                    "dayOfWeek": [
+                        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+                    ],
+                    "opens": "00:00",
+                    "closes": "23:59"
+                    }
+                ],
+                "image": "https://pub-9b40b6bee2fc4ab1a479945f49263f10.r2.dev/Portada-Seminuevosmex.Net-Inventario-Autos-Seminuevos-Mexico-0043412.jpg",
+                "logo": "https://www.seminuevosmex.net/images/logo.svg",
+                "priceRange": "$$$",
+                "sameAs": [
+                    "https://www.facebook.com/SeminuevosMexNet",
+                    "https://www.instagram.com/SeminuevosMexNet",
+                    "https://www.linkedin.com/company/seminuevosmexnet"
+                ],
+                "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "Servicios de Compra Inteligente de Autos en México",
+                    "itemListElement": [
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                        "@type": "Service",
+                        "name": "Asistente de IA para Búsqueda Hiper-Personalizada de Autos",
+                        "provider": { "@id": "https://www.seminuevosmex.net/#AutoDealer" }
+                        }
+                    },
+                    {
+                        "@type": "Offer",
+                        "itemOffered": {
+                        "@type": "Service",
+                        "name": "Pre-Aprobación de Financiamiento Automotriz en Línea",
+                        "provider": { "@id": "https://www.seminuevosmex.net/#AutoDealer" }
+                        }
+                    }
+                    ],
+                    "image": "https://pub-9b40b6bee2fc4ab1a479945f49263f10.r2.dev/Portada-Seminuevosmex.Net-Inventario-Autos-Seminuevos-Mexico-0043412.jpg",
+                    "hasOfferCatalog": {
+                    "@type": "OfferCatalog",
+                    "name": "Los Autos Seminuevos Más Vendidos en México",
+                    "itemListElement": [
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=7C3E3E4",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Volkswagen Jetta 2018",
+                            "brand": { "@type": "Brand", "name": "Volkswagen" },
+                            "model": "Jetta",
+                            "productionDate": "2018",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "280000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=7C3E3E4"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=B49FF65",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Nissan Sentra 2019",
+                            "brand": { "@type": "Brand", "name": "Nissan" },
+                            "model": "Sentra",
+                            "productionDate": "2019",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "265000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=B49FF65"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=A1B2C3D",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Nissan Versa 2020",
+                            "brand": { "@type": "Brand", "name": "Nissan" },
+                            "model": "Versa",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "245000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=A1B2C3D"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=D4E5F6G",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Kia Rio Sedán 2021",
+                            "brand": { "@type": "Brand", "name": "Kia" },
+                            "model": "Rio",
+                            "productionDate": "2021",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "310000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=D4E5F6G"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=G7H8I9J",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Mazda 3 Sedán 2019",
+                            "brand": { "@type": "Brand", "name": "Mazda" },
+                            "model": "3",
+                            "productionDate": "2019",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "295000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=G7H8I9J"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=J1K2L3M",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Chevrolet Aveo 2020",
+                            "brand": { "@type": "Brand", "name": "Chevrolet" },
+                            "model": "Aveo",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "240000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=J1K2L3M"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=M4N5O6P",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Honda CR-V 2019",
+                            "brand": { "@type": "Brand", "name": "Honda" },
+                            "model": "CR-V",
+                            "productionDate": "2019",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "350000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=M4N5O6P"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=P7Q8R9S",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Toyota RAV4 2020",
+                            "brand": { "@type": "Brand", "name": "Toyota" },
+                            "model": "RAV4",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "370000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=P7Q8R9S"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=S1T2U3V",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Volkswagen Vento 2021",
+                            "brand": { "@type": "Brand", "name": "Volkswagen" },
+                            "model": "Vento",
+                            "productionDate": "2021",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "300000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=S1T2U3V"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=V4W5X6Y",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Toyota Hilux 2019",
+                            "brand": { "@type": "Brand", "name": "Toyota" },
+                            "model": "Hilux",
+                            "productionDate": "2019",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "410000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=V4W5X6Y"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=Z7Y6X5W",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Kia Seltos 2021",
+                            "brand": { "@type": "Brand", "name": "Kia" },
+                            "model": "Seltos",
+                            "productionDate": "2021",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "360000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=Z7Y6X5W"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=W1V2U3T",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Hyundai Creta 2020",
+                            "brand": { "@type": "Brand", "name": "Hyundai" },
+                            "model": "Creta",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "330000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=W1V2U3T"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=T4S5R6Q",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Volkswagen Tiguan 2021",
+                            "brand": { "@type": "Brand", "name": "Volkswagen" },
+                            "model": "Tiguan",
+                            "productionDate": "2021",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "450000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=T4S5R6Q"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=Q1P2O3N",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Volkswagen Taos 2022",
+                            "brand": { "@type": "Brand", "name": "Volkswagen" },
+                            "model": "Taos",
+                            "productionDate": "2022",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "480000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=Q1P2O3N"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=N4M5L6K",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Volkswagen Taigun 2023",
+                            "brand": { "@type": "Brand", "name": "Volkswagen" },
+                            "model": "Taigun",
+                            "productionDate": "2023",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "510000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=N4M5L6K"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=K7J8I9H",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "MG ZS 2022",
+                            "brand": { "@type": "Brand", "name": "MG" },
+                            "model": "ZS",
+                            "productionDate": "2022",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "490000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=K7J8I9H"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=H1G2F3E",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Suzuki Swift 2021",
+                            "brand": { "@type": "Brand", "name": "Suzuki" },
+                            "model": "Swift",
+                            "productionDate": "2021",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "230000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=H1G2F3E"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=E4D5C6B",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Nissan NP300 Frontier 2020",
+                            "brand": { "@type": "Brand", "name": "Nissan" },
+                            "model": "NP300 Frontier",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "320000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=E4D5C6B"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=B1A2C3D",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Honda Civic 2019",
+                            "brand": { "@type": "Brand", "name": "Honda" },
+                            "model": "Civic",
+                            "productionDate": "2019",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "300000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=B1A2C3D"
+                            }
+                        }
+                        },
+                        {
+                        "@type": "Offer",
+                        "url": "https://www.seminuevosmex.net/inventario?vehiculo=D4E5F6G",
+                        "itemOffered": {
+                            "@type": "Vehicle",
+                            "name": "Toyota Corolla 2020",
+                            "brand": { "@type": "Brand", "name": "Toyota" },
+                            "model": "Corolla",
+                            "productionDate": "2020",
+                            "offers": {
+                                "@type": "Offer",
+                                "priceCurrency": "MXN",
+                                "price": "310000",
+                                "availability": "https://schema.org/InStock",
+                                "url": "https://www.seminuevosmex.net/inventario?vehiculo=D4E5F6G"
+                            }
+                        }
+                        }
+                    ]
+                    }
+                },
+                "mainEntity": {
+                    "@type": "WebPage",
+                    "mainEntity": {
+                    "@type": "FAQPage",
+                    "mainEntity": [
+                        {
+                        "@type": "Question",
+                        "name": "¿Qué autos seminuevos puedo encontrar en SeminuevosMex.Net?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Integramos el inventario verificado de las agencias y concesionarios más confiables de México, iniciando con una fuerte presencia en Puebla. Solo encontrarás vehículos certificados, garantizando calidad, seguridad y un historial limpio."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "¿Cómo funciona el asistente de IA para encontrar un auto?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Nuestro asistente te permite buscar autos usando lenguaje natural. Puedes pedirle 'una SUV familiar segura por menos de 400,000 pesos en Puebla' y analizará miles de opciones para mostrarte solo las que cumplen tus criterios y tienen la mejor relación valor-precio del mercado."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "1. ¿Es seguro comprar un auto seminuevo en Puebla a través de su plataforma?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Absolutamente. Es la forma más segura. Solo trabajamos con agencias y concesionarios certificados en Puebla. Cada auto tiene una inspección previa y garantía, eliminando el riesgo de fraudes, vicios ocultos o problemas legales comunes en tratos con particulares."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "2. ¿Qué garantía tienen los autos seminuevos que se anuncian?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Todos los vehículos listados en SeminuevosMex.Net provienen de agencias que ofrecen, como mínimo, una garantía legal de 90 días en motor y transmisión. Muchos de nuestros socios en Puebla extienden estas garantías, lo cual se especifica en cada publicación."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "3. ¿Cómo funciona el asistente de IA para encontrar el mejor auto para mí?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Nuestro asistente (AMEC)™ te permite describir lo que necesitas con tus propias palabras, por ejemplo: 'busco una SUV segura para mi familia en Puebla, con presupuesto de 450,000 pesos'. La IA analiza todo el inventario y te muestra solo las opciones que cumplen tus criterios, ordenadas por la mejor relación calidad-precio."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "4. ¿Qué agencias de autos seminuevos de Puebla están en la plataforma?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Integramos el inventario de los grupos automotrices más reconocidos y confiables de la ciudad de Puebla y la zona metropolitana, incluyendo Angelópolis y Cholula. Constantemente agregamos nuevas agencias para darte la oferta más completa."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "5. ¿Puedo encontrar un Volkswagen Jetta o Vento seminuevo en Puebla aquí?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Sí. El VW Jetta y el Vento son de los modelos más buscados. Nuestra plataforma te da acceso en tiempo real al inventario de estos vehículos en las agencias de Puebla, permitiéndote comparar precios, años y versiones en un solo lugar."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "6. Estoy buscando una SUV seminueva en Puebla, como una Tiguan o una CR-V, ¿tienen opciones?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Por supuesto. El segmento de SUVs es nuestra especialidad. Podrás encontrar y comparar las mejores opciones de VW Tiguan, Honda CR-V, Toyota RAV4, Kia Seltos y más, directamente del inventario certificado de las agencias poblanas."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "7. ¿Cómo puedo solicitar un financiamiento para un auto seminuevo en Puebla?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Nuestro proceso es 100% digital. Cuando encuentres un auto que te guste, puedes iniciar tu solicitud de pre-aprobación de crédito directamente en nuestra plataforma. Comparamos las ofertas de varios bancos para encontrarte la mejor tasa."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "8. ¿Qué requisitos necesito para obtener un crédito automotriz para un seminuevo?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Los requisitos básicos son: identificación oficial, comprobante de domicilio, y comprobantes de ingresos de los últimos 3 meses. Nuestra plataforma te guía paso a paso. Tener un buen historial crediticio es importante, pero tenemos opciones para diferentes perfiles."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "9. ¿El precio que veo en la página es el precio final o se puede negociar?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Los precios publicados son establecidos por las agencias y son altamente competitivos. Nuestra plataforma te da la transparencia para comparar ofertas similares en Puebla, asegurando que obtengas un precio justo desde el inicio. Cualquier ajuste final se realiza directamente con la agencia."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "10. ¿Cuál es la diferencia entre comprar aquí y en otras plataformas como Kavak en Puebla?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "La principal diferencia es la amplitud de la oferta. Mientras otros ofrecen solo su propio inventario, nosotros integramos el inventario de MÚLTIPLES agencias certificadas en Puebla. Esto te da más opciones, mayor poder de comparación y la confianza de comprar directamente en un concesionario establecido."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "11. ¿Toman mi auto actual a cuenta para comprar un seminuevo?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Sí, la mayoría de nuestras agencias socias en Puebla ofrecen la opción de tomar tu auto a cuenta. Puedes indicarlo durante tu proceso y te conectaremos con la agencia para que realicen una valuación de tu vehículo."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "12. ¿Cuál es el kilometraje ideal para un auto seminuevo en venta en Puebla?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "No hay un número mágico, pero una buena referencia es un promedio de 15,000 a 20,000 km por año. Nuestro asistente de IA toma en cuenta el kilometraje, el año y el precio para calcular el 'Valor por tu Dinero', ayudándote a tomar la mejor decisión."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "13. ¿Qué documentos debo revisar al comprar un seminuevo en una agencia de Puebla?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Al comprar con nuestras agencias socias, la revisión documental ya fue hecha por ellos. Te entregarán factura original o refactura de la agencia, historial de tenencias pagadas, verificación vigente y reporte del REPUVE sin reporte de robo."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "14. ¿Puedo agendar una prueba de manejo para un auto que vi en la plataforma?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "¡Claro! Una vez que encuentres el auto de tu interés, la plataforma te permite contactar directamente a la agencia en Puebla para coordinar una cita para tu prueba de manejo. Es un paso esencial y te facilitamos el proceso."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "15. ¿Qué marcas de autos seminuevos son las más confiables en México?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Marcas como Toyota, Honda, Mazda, y ciertos modelos de Nissan y Volkswagen tienen una excelente reputación de durabilidad y bajo costo de mantenimiento. Nuestro blog contiene análisis detallados para ayudarte a elegir la marca y modelo ideal para ti."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "16. ¿La plataforma tiene algún costo para el comprador?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "No. El uso de SeminuevosMex.Net, incluyendo la búsqueda con IA y la solicitud de pre-aprobación de crédito, es completamente gratuito para ti. Nuestra comisión la paga la agencia vendedora."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "17. ¿Cómo sé que el precio de un auto en su inventario de Puebla es justo?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Nuestra tecnología analiza los precios de vehículos similares en todo el mercado de Puebla y a nivel nacional. El algoritmo AMEC™ te indica si el precio de un vehículo está por encima, por debajo o en el promedio del mercado, dándote un poder de negociación basado en datos."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "18. ¿Busco un Nissan Sentra o Versa seminuevo en Puebla, me pueden ayudar?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Definitivamente. Son dos de los sedanes más populares. Usa nuestra barra de búsqueda o el asistente de IA para ver al instante todas las opciones de Sentra y Versa disponibles en las agencias certificadas de Puebla, compara sus precios y equipamiento."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "19. ¿Qué pasa después de que solicito la pre-aprobación de mi crédito?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Una vez pre-aprobado, un asesor financiero de la institución que elegiste se pondrá en contacto contigo para finalizar el proceso. Al mismo tiempo, te conectamos con la agencia en Puebla para que puedas apartar el auto y agendar la entrega."
+                        }
+                        },
+                        {
+                        "@type": "Question",
+                        "name": "20. Si vivo en Cholula o Atlixco, ¿puedo comprar un auto del inventario de Puebla?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "¡Sí! Nuestra plataforma cubre toda la zona metropolitana. Puedes buscar en todo el inventario de Puebla y realizar el proceso de compra en la agencia que te quede más conveniente. Muchos de nuestros socios ofrecen facilidades para la entrega."
+                        }
+                        }
+                    ]
+                    }
+                },
+                "potentialAction": [
+                    {
+                    "@type": "SearchAction",
+                    "name": "Hablar con Sofi (Asistente IA)",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "https://www.seminuevosmex.net/inventario?q={search_term_string}"
+                    },
+                    "query-input": {
+                        "@type": "PropertyValueSpecification",
+                        "valueRequired": true,
+                        "valueName": "search_term_string",
+                        "valuePattern": ".+",
+                        "placeholder": "Ej: 'Busco una SUV familiar en Puebla por menos de $400,000'"
+                    }
+                    },
+                    {
+                    "@type": "ShareAction",
+                    "name": "Compartir Inventario",
+                    "description": "Comparte nuestro inventario de Big Data de autos seminuevos con tus conocidos y ayuda a crear la red de compradores y vendedores más grande de México.",
+                    "url": "https://www.seminuevosmex.net/"
+                    }
+                ]
+                }
+            </script>
+        </t>
+
+        <!-- SVG SPRITE SYSTEM - All icons in one place for maximum efficiency -->
+        <svg style="display:none;">
+            <symbol id="icon-share" viewBox="0 0 24 24">
+                <path d="M8.59 13.51l6.83 3.98m-.01-10.98l-6.82 3.98M21 5a3 3 0 11-6 0 3 3 0 016 0zM9 12a3 3 0 11-6 0 3 3 0 016 0zM21 19a3 3 0 11-6 0 3 3 0 016 0z" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-message" viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-filter" viewBox="0 0 24 24">
+                <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-search" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-camera" viewBox="0 0 24 24">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="13" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-sort" viewBox="0 0 24 24">
+                <path d="M3 6h18M7 12h10m-7 6h4" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-clear" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="m15 9-6 6m0-6l6 6" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-chevron-down" viewBox="0 0 24 24">
+                <path d="m6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-close" viewBox="0 0 24 24">
+                <path d="m18 6-12 12M6 6l12 12" fill="none" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+            <symbol id="icon-shield-lock" viewBox="0 0 24 24">
+                <path d="M12 3l7 4v5c0 5.25-3.5 10-7 10s-7-4.75-7-10V7l7-4z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="13" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 15v1" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+        </svg>
+
+        <div id="wrap" class="oe_structure">
+
+            <!-- HERO DASHBOARD PORTADA -->
+            <section class="hero-portada">
+              <h1 class="hero-portada-title">SEMINUEVOSMEX.NET</h1>
+              <div class="hero-portada-subtitle">
+                Inventario Autos Seminuevos Certificados | Base de Datos | CDMX · Puebla · México
+              </div>
+            </section>
+            <section class="main-dashboard">
+              <!-- Aquí comienza tu buscador/tabla/etc -->
+            </section>
+
+            <div class="main-layout glass-bg">
+        
+                <!-- CONTROLES DASHBOARD -->
+                <section class="dashboard-controls glass-card">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-12">
+                                <!-- BÚSQUEDA INTELIGENTE -->
+                                <div class="row mb-3">
+                                    <div class="col-lg-8 col-md-7">
+                                        <div class="search-container">
+                                            <div class="search-input-wrapper">
+                                                <svg width="20" height="20" class="search-icon">
+                                                    <use href="#icon-search"/>
+                                                </svg>
+                                                <input type="text" id="search-input" class="search-input" placeholder="Búsqueda inteligente: marca, modelo, año, color, ubicación..." autocomplete="off"/>
+                                                <button class="clear-search-btn icon-btn" type="button" id="clear-search-btn" style="display: none;" aria-label="Limpiar búsqueda" title="Limpiar búsqueda">
+                                                    <svg width="18" height="18">
+                                                        <use href="#icon-close"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-5">
+                                        <div class="control-buttons">
+                                            <button class="button sort-btn active" data-sort="precio" title="Ordenar por precio">
+                                                <svg width="18" height="18">
+                                                    <use href="#icon-sort"/>
+                                                </svg>
+                                                Precio
+                                            </button>
+                                            <button class="button sort-btn" data-sort="km" title="Ordenar por kilómetros">
+                                                <svg width="18" height="18">
+                                                    <use href="#icon-sort"/>
+                                                </svg>
+                                                Kms
+                                            </button>
+                                            <button class="button clear-filters-btn" title="Limpiar todos los filtros">
+                                                <svg width="18" height="18">
+                                                    <use href="#icon-clear"/>
+                                                </svg>
+                                                Limpiar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+        
+                                <!-- FILTER TAGS -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div id="filter-tags" class="filter-tags-container"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            
+                <!-- VISTA DESKTOP: DASHBOARD BIGDATA -->
+                <main class="desktop-dashboard">
+                    <div class="container-fluid">
+                        <div class="table-responsive">
+                            <table id="tabla-inventario" class="table dense-table">
+                                <thead class="table-header">
+                                <tr>
+                                    <th class="col-vehiculo filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="vehiculo" aria-label="Filtrar por vehículo" title="Filtrar por vehículo">
+                                            VEHÍCULO 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-version filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="variante" aria-label="Filtrar por versión" title="Filtrar por versión">
+                                            VERSIÓN 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-precio filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="precio" aria-label="Filtrar por precio" title="Filtrar por precio">
+                                            PRECIO 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <!-- AÑO MOVIDO: ahora se prioriza su visibilidad (antes estaba al final y oculto en d-xl) -->
+                                    <th class="col-año filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="año" aria-label="Filtrar por año" title="Filtrar por año">
+                                            AÑO 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-km filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="km" aria-label="Filtrar por kilómetros" title="Filtrar por kilómetros">
+                                            KM 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-color filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="color" aria-label="Filtrar por color" title="Filtrar por color">
+                                            COLOR 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-tipo-auto filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="tipo" aria-label="Filtrar por tipo" title="Filtrar por tipo">
+                                            TIPO 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-transmision d-none d-lg-table-cell filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="transmision" aria-label="Filtrar por transmisión" title="Filtrar por transmisión">
+                                            TRANS. 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-combustible d-none d-lg-table-cell filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="combustible" aria-label="Filtrar por combustible" title="Filtrar por combustible">
+                                            COMB. 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="col-ubicacion d-none d-xl-table-cell filter-th-relative">
+                                        <button class="filter-header-btn" data-filter="ubicacion" aria-label="Filtrar por ubicación" title="Filtrar por ubicación">
+                                            UBICACIÓN 
+                                            <svg width="16" height="16" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <!-- Columna AÑO ORIGINAL ELIMINADA (estaba aquí al final con d-none d-xl-table-cell) -->
+                                    <th class="col-chat">CHAT</th>
+                                    <th class="col-compartir">COMPARTIR</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!-- PRODUCTOS INICIALES -->
+                                <!-- FIN DE PRODUCTOS INICIALES -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </main>
+        
+                <!-- MOBILE VERSION: Tabla Móvil optimizada -->
+                <div class="mobile-optimized">
+                    <div class="container-fluid px-1">
+                        <div class="table-responsive">
+                            <table class="table dense-table mobile-table">
+                                <thead class="table-header">
+                                <tr>
+                                    <th class="mobile-th-vehiculo" style="width: 30%;">
+                                        <button class="mobile-filter-header-btn" data-filter="vehiculo" aria-label="Filtrar por vehículo" title="Filtrar por vehículo">
+                                            VEHÍCULO 
+                                            <svg width="14" height="14" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="mobile-th-precio" style="width: 25%;">
+                                        <button class="mobile-filter-header-btn" data-filter="precio" aria-label="Filtrar por precio" title="Filtrar por precio">
+                                            PRECIO 
+                                            <svg width="14" height="14" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="mobile-th-km" style="width: 20%;">
+                                        <button class="mobile-filter-header-btn" data-filter="km" aria-label="Filtrar por km" title="Filtrar por km">
+                                            KM 
+                                            <svg width="14" height="14" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="mobile-th-color" style="width: 15%;">
+                                        <button class="mobile-filter-header-btn" data-filter="color" aria-label="Filtrar por color" title="Filtrar por color">
+                                            COLOR 
+                                            <svg width="14" height="14" class="filter-icon">
+                                                <use href="#icon-chevron-down"/>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th class="mobile-th-acciones" style="width: 10%;">ACC</th>
+                                </tr>
+                                </thead>
+                                <tbody id="mobile-table-body"/>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- FILTRO POPOVER -->
+                <div id="filter-popover" class="filter-popover glass-card" style="display:none;">
+                    <div class="popover-content">
+                        <div class="popover-header">
+                            <h6 id="filter-title" class="popover-title">Filtrar por:</h6>
+                            <button class="icon-btn close-filter-btn" aria-label="Cerrar filtro" title="Cerrar filtro">
+                                <svg width="18" height="18">
+                                    <use href="#icon-close"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="filter-options" class="filter-options">
+                            <!-- Opciones dinámicas -->
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- main-layout glass-bg -->
+        </div> <!-- wrap -->
+        
+        <!-- BOTÓN FLOTANTE DE SEGURIDAD Y PRIVACIDAD -->
+        <button id="security-popup-btn" class="security-popup-btn" aria-label="Ver información de seguridad y privacidad" title="Seguridad y privacidad">
+            <svg width="22" height="22" style="vertical-align:middle;">
+                <use href="#icon-shield-lock"/>
+            </svg>
+        </button>
+
+        <!-- MODAL DE SEGURIDAD Y PRIVACIDAD -->
+        <div id="security-popup-backdrop" class="security-popup-backdrop" tabindex="-1" style="display:none;">
+            <div id="security-popup-modal" class="security-popup-modal glass-card" role="dialog" aria-modal="true" aria-labelledby="security-popup-title">
+                <div class="security-popup-header">
+                    <svg width="28" height="28" style="color:#7c3aed;">
+                        <use href="#icon-shield-lock"/>
+                    </svg>
+                    <h5 id="security-popup-title" class="security-popup-title">Seguridad, Certificación y Privacidad | SEMINUEVOSMEX.NET</h5>
+                    <button class="icon-btn close-security-popup-btn" aria-label="Cerrar" title="Cerrar">
+                        <svg width="20" height="20">
+                            <use href="#icon-close"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="security-popup-body">
+                    <ul class="security-popup-list">
+                        <li>Solo publicamos vehículos de <b>agencias oficiales</b> y operadores <b>registrados ante autoridades mexicanas</b>.</li>
+                        <li>Nuestra tecnología <b>bloquea autos de particulares</b> y <b>sin certificación</b>.</li>
+                        <li>Todos los autos cuentan con <b>garantía legal y comercial</b> de agencia.</li>
+                        <li>Cumplimos con la <b>Ley Federal de Protección de Datos Personales</b> (México) y protocolos europeos (GDPR).</li>
+                        <li><b>Nunca solicitamos anticipos</b>. La documentación y pago se realizan <b>directamente en la agencia o concesionario autorizado</b>.</li>
+                        <li>Solo pedimos <b>nombre, teléfono y correo</b> para agendar tu visita. Tus datos son confidenciales y solo para uso interno y de la agencia autorizada receptora.</li>
+                        <li>Las <b>inspecciones y pruebas de los autos</b> se realizan en las instalaciones de las agencias autorizadas.</li>
+                    </ul>
+                </div>
+                <div class="security-popup-footer">
+                    <a href="/conocenos-seminuevosmex-net-seminuevos-puebla-mexico" target="_blank" class="button secondary-btn" rel="noopener">Conoce el proyecto</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SVG extra para icono de seguridad -->
+        <svg style="display:none;">
+            <symbol id="icon-shield-lock" viewBox="0 0 24 24">
+                <path d="M12 3l7 4v5c0 5.25-3.5 10-7 10s-7-4.75-7-10V7l7-4z" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="13" r="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 15v1" stroke="currentColor" stroke-width="2"/>
+            </symbol>
+        </svg>
+    </t>
+</t>
