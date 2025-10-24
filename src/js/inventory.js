@@ -186,11 +186,7 @@
                 };
 
                 vehiculo.vehiculoCompleto = vehiculo.marca + ' ' + vehiculo.modelo + (vehiculo.variante ? ' ' + vehiculo.variante : '') + ' ' + vehiculo.año;
-                vehiculo.searchText = [
-                    vehiculo.marca, vehiculo.modelo, vehiculo.variante,
-                    vehiculo.año, vehiculo.transmision, vehiculo.combustible,
-                    vehiculo.color, vehiculo.ubicacion, vehiculo.tipo
-                ].join(' ').toLowerCase();
+                vehiculo.searchText = this._buildEnhancedSearchText(vehiculo);
 
                 this.vehiculos.push(vehiculo);
             }
@@ -1720,8 +1716,104 @@
             if (tipo.match(/coupe|coup[eé]/)) return 'Coupé';
 
             return tipoOriginal.charAt(0).toUpperCase() + tipoOriginal.slice(1);
+        },
+
+        // ==========================================
+        // BÚSQUEDA INTELIGENTE EXPANDIDA - SINÓNIMOS Y CATEGORÍAS SEMÁNTICAS
+        // ==========================================
+        _buildEnhancedSearchText: function(vehiculo) {
+            // Base: marca, modelo, variante, año, etc.
+            var baseText = [
+                vehiculo.marca, vehiculo.modelo, vehiculo.variante,
+                vehiculo.año, vehiculo.transmision, vehiculo.combustible,
+                vehiculo.color, vehiculo.ubicacion, vehiculo.tipo
+            ].join(' ').toLowerCase();
+
+            // Array de palabras clave expandidas por categoría semántica
+            var keywordsExpanded = [];
+
+            // 1. CATEGORÍA: TIPO DE VEHÍCULO Y SINÓNIMOS
+            var tipo = (vehiculo.tipo || '').toLowerCase();
+            if (tipo.match(/sedan|sedán/)) {
+                keywordsExpanded.push('sedan sedán auto automóvil carro familiar');
+            }
+            if (tipo.match(/suv|sport.*utility|utility vehicle|3row|crossover/)) {
+                keywordsExpanded.push('suv utility vehicle crossover familiar 3filas seguridad');
+            }
+            if (tipo.match(/pickup|camioneta|truck|trabajo|comercial/)) {
+                keywordsExpanded.push('pickup camioneta truck trabajo comercial carga transporte laboral');
+            }
+            if (tipo.match(/van|minivan|monovolumen|pasajeros/)) {
+                keywordsExpanded.push('van minivan monovolumen transporte pasajeros familiar');
+            }
+            if (tipo.match(/hatchback|compacto|pequeño|eco/)) {
+                keywordsExpanded.push('hatchback compacto pequeño eco economico ciudad');
+            }
+            if (tipo.match(/coupe|deportivo|performance|turbo|sport|racing/)) {
+                keywordsExpanded.push('coupe deportivo performance turbo sport racing velocidad');
+            }
+            if (tipo.match(/wagon|familiar|vagoneta|station/)) {
+                keywordsExpanded.push('wagon familiar vagoneta station carga maletero espacio');
+            }
+
+            // 2. CARACTERÍSTICA: TRANSMISIÓN
+            var trans = (vehiculo.transmision || '').toLowerCase();
+            if (trans.match(/automatica|automatic|auto/)) {
+                keywordsExpanded.push('automatica automatic automático cambio automático facilidad');
+            }
+            if (trans.match(/manual|mecanica|stick|palanca/)) {
+                keywordsExpanded.push('manual mecanica mecánico stick palanca eficiencia');
+            }
+
+            // 3. CARACTERÍSTICA: COMBUSTIBLE
+            var comb = (vehiculo.combustible || '').toLowerCase();
+            if (comb.match(/gasolina|nafta|premium|regular|magna/)) {
+                keywordsExpanded.push('gasolina nafta premium regular magna combustible');
+            }
+            if (comb.match(/diesel|turbo diesel/)) {
+                keywordsExpanded.push('diesel turbo diesel eficiencia consumo');
+            }
+            if (comb.match(/hibrido|hybrid|eco|electrico/)) {
+                keywordsExpanded.push('hibrido hybrid eco ecologico sostenible');
+            }
+
+            // 4. USO PREVISTO (INFERIDO)
+            var marca = (vehiculo.marca || '').toLowerCase();
+            var modelo = (vehiculo.modelo || '').toLowerCase();
+            
+            // Marcas de lujo/premium
+            if (marca.match(/mercedes|bmw|audi|porsche|lexus|tesla|rivian|cadillac/)) {
+                keywordsExpanded.push('lujo premium luxury pricey caro');
+            }
+            // Marcas económicas
+            if (marca.match(/suzuki|kia|hyundai|chery|geely|lifan|marutti/)) {
+                keywordsExpanded.push('economico presupuesto accesible barato ahorro');
+            }
+            // Marcas robustas/trabajo
+            if (marca.match(/ford|chevrolet|dodge|nissan|toyota|hilux|ranger|f-150|silverado/)) {
+                keywordsExpanded.push('trabajo robusto durabilidad confianza pickup');
+            }
+            // Marcas deportivas
+            if (marca.match(/lamborghini|ferrari|porsche|maserati|bmw|audi rs|mercedes.*amg|corvette/)) {
+                keywordsExpanded.push('deportivo velocidad aceleración emocion turismo');
+            }
+
+            // 5. CARACTERÍSTICAS DE SEGURIDAD/CONFORT (GENÉRICAS)
+            keywordsExpanded.push('seguridad airbag frenos abs control estabilidad');
+            keywordsExpanded.push('confort climatizacion aire acondicionado tapiceria electrico');
+
+            // 6. PALABRAS CLAVE UNIVERSALES PARA BÚSQUEDAS COMUNES
+            // Búsquedas de usuarios frecuentes
+            keywordsExpanded.push('compra venta inventario disponible stock ofertas');
+            keywordsExpanded.push('financiamiento credito pago cuotas mensual');
+            keywordsExpanded.push('certificado inspeccion garantia legal');
+
+            // Combinar base + expandidas
+            var allText = baseText + ' ' + keywordsExpanded.join(' ');
+            return allText;
         }
     };
+
 
     // ==========================================
     // FACEBOOK PIXEL INTEGRATION - CONSOLIDADO (UNA SOLA FUNCIÓN)

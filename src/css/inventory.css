@@ -51,7 +51,8 @@
    1. VARIABLES Y TOKENS PRINCIPALES DE DISEÑO
    ============================================================================ */
    :root {
-    --brand-purple: #262633;
+    --brand-purple: #7c3aed;
+    --brand-purple-dark: #6d28d9;
     --brand-dark-purple: #4c1d95;
     --brand-black: #181425;
     --brand-grey: #262633;
@@ -869,6 +870,17 @@ tr.highlighted-shared.viewed-row {
   font-size: 1rem;
   line-height: 1.2;
   margin-bottom: 0.2rem;
+  letter-spacing: 0.3px;
+}
+
+/* Desktop enhancement para mejor visibilidad (contraste optimizado) */
+@media (min-width: 901px) {
+  .precio-financiado-inline {
+    font-weight: 800;
+    font-size: 1.05rem;
+    text-shadow: 0 0 1px rgba(124, 58, 237, 0.3);
+    filter: brightness(1.15) saturate(1.1);
+  }
 }
 
 /* Precio Cell - Contenedor de precios con financiado inline */
