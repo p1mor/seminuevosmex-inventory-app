@@ -1227,12 +1227,9 @@
                     '</td>' +
                     '<td class="text-center"><span class="version-badge">' + (rowData.variante || 'Base') + '</span></td>' +
                     '<td class="precio-cell">' +
+                        '<div class="precio-financiado-inline">$' + rowData.precioFinanciado.toLocaleString() + '/mes</div>' +
                         '<div class="precio-actual">$' + rowData.precio.toLocaleString() + '</div>' +
                         '<div class="precio-original">$' + rowData.precioOriginal.toLocaleString() + '</div>' +
-                    '</td>' +
-                    '<td class="precio-financiado-cell text-center">' +
-                        '<small class="precio-financiado-label">60 meses</small>' +
-                        '<div class="precio-financiado">$' + rowData.precioFinanciado.toLocaleString() + '</div>' +
                     '</td>' +
                     '<td class="col-año-cell text-center"><strong>' + rowData.año + '</strong></td>' +
                     '<td class="text-center"><strong class="km-value">' + rowData.km.toLocaleString() + ' km</strong></td>' +
@@ -1299,6 +1296,7 @@
                         '<div class="vehicle-details" style="font-size: 0.7rem;">' + (rowData.variante || '') + '</div>' +
                     '</td>' +
                     '<td class="mobile-precio text-center">' +
+                        '<div class="precio-financiado-inline" style="font-size: 0.65rem; color: #7c3aed; font-weight: 600;">$' + rowData.precioFinanciado.toLocaleString() + '/mes</div>' +
                         '<div class="precio-actual" style="font-size: 0.7rem;">$' + rowData.precio.toLocaleString() + '</div>' +
                         '<div class="precio-original" style="font-size: 0.6rem;">$' + rowData.precioOriginal.toLocaleString() + '</div>' +
                     '</td>' +
