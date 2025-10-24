@@ -1,5 +1,5 @@
-<!-- SEMINUEVOSMEX INVENTARIO – VERSIÓN 16.0 (2025-09-08) – ODOO QWEB/BOOTSTRAP
-Sincronía: [HTML: v15-html-inventario-seminuevosmex.net-inventario.html] + [CSS: v15-css-inventario-seminuevosmex.net-inventario.css] + [JS: v15-javascript-inventario-seminuevosmex.net-inventario.js]
+<!-- SEMINUEVOSMEX INVENTARIO – VERSIÓN 15.1 REFACTORIZADA (2025-10-24) – ODOO QWEB/BOOTSTRAP
+Sincronía: [HTML: v15.1-html-refactorizado] + [CSS: v15.1-css] + [JS: v15.1-javascript-refactorizado]
 Entorno: Odoo QWeb/SaaS (Bootstrap nativo) – Cumple rules y nomenclatura Odoo/Bootstrap
 
 FUNCIÓN PRINCIPAL:
@@ -967,14 +967,14 @@ AUTOR: Camilo Pimor -->
                 <div id="filter-popover" class="filter-popover glass-card" style="display:none;">
                     <div class="popover-content">
                         <div class="popover-header">
-                            <h6 id="filter-title" class="popover-title">Filtrar por:</h6>
-                            <button class="icon-btn close-filter-btn" aria-label="Cerrar filtro" title="Cerrar filtro">
+                            <h6 id="clean-filter-title" class="popover-title">Filtrar por:</h6>
+                            <button class="icon-btn close-filter-btn" id="clean-filter-close" aria-label="Cerrar filtro" title="Cerrar filtro">
                                 <svg width="18" height="18">
                                     <use href="#icon-close"/>
                                 </svg>
                             </button>
                         </div>
-                        <div id="filter-options" class="filter-options">
+                        <div id="clean-filter-content" class="filter-options">
                             <!-- Opciones dinámicas -->
                         </div>
                     </div>

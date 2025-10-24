@@ -849,9 +849,7 @@
                 var isSelected = currentValue === value;
                 var cleanValue = value.replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                 html += `
-                    <label style="display: block; margin-bottom: 10px; padding: 12px; cursor: pointer; border-radius: 8px; border: 1px solid ${isSelected ? '#7c3aed' : 'rgba(124, 58, 237, 0.2)'}; background: ${isSelected ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; transition: all 0.2s ease; color: #ffffff;"
-                           onmouseover="if (!this.querySelector('input').checked) { this.style.backgroundColor='rgba(124, 58, 237, 0.1)'; this.style.borderColor='rgba(124, 58, 237, 0.4)'; }"
-                           onmouseout="if (!this.querySelector('input').checked) { this.style.backgroundColor='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(124, 58, 237, 0.2)'; }">
+                    <label class="filter-option-label" style="display: block; margin-bottom: 10px; padding: 12px; cursor: pointer; border-radius: 8px; border: 1px solid ${isSelected ? '#7c3aed' : 'rgba(124, 58, 237, 0.2)'}; background: ${isSelected ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255, 255, 255, 0.05)'}; transition: all 0.2s ease; color: #ffffff;">
                         <input type="radio" name="clean_filter_${filterType}" value="${cleanValue}"
                                ${isSelected ? 'checked' : ''}
                                style="margin-right: 12px; accent-color: #7c3aed; transform: scale(1.2);"
@@ -866,16 +864,22 @@
             if (currentValue) {
                 html += `
                     <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(124, 58, 237, 0.3);">
-                    <button data-clear-filter="${filterType}"
-                            style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 14px; font-weight: 500; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);"
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(239, 68, 68, 0.4)';"
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.3)';">
+                    <button class="filter-clear-btn" data-clear-filter="${filterType}"
+                            style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; padding: 12px 16px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 14px; font-weight: 500; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">
                         🗑️ Limpiar filtro
                     </button>
                 `;
             }
 
             content.innerHTML = html;
+
+            // Agregar clase de hover a labels no seleccionadas (para hover effects sin onmouseover)
+            content.querySelectorAll('.filter-option-label').forEach(function(label) {
+                var radio = label.querySelector('input[type="radio"]');
+                if (radio && !radio.checked) {
+                    label.classList.add('filter-option-label--unselected');
+                }
+            });
 
             // Listeners radio
             content.querySelectorAll('input[type="radio"]').forEach(function(radio) {
@@ -895,11 +899,21 @@
             // Listener botón limpiar
             var clearBtn = content.querySelector('[data-clear-filter]');
             if (clearBtn) {
+                clearBtn.classList.add('filter-clear-btn--active');
                 clearBtn.addEventListener('click', function() {
                     var filterType = this.getAttribute('data-clear-filter');
                     delete self.filtrosActivos[filterType];
                     self.aplicarFiltrosYRenderizar();
                     self.hideFilterPopover();
+                });
+                // Agregar hover listeners para botón
+                clearBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.4)';
+                });
+                clearBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.3)';
                 });
             }
 

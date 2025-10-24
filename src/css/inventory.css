@@ -1,8 +1,13 @@
 /* ===============================================================================
- SEMINUEVOSMEX INVENTARIO – VERSIÓN 15.0 STABLE (2025-09-08) – ODOO QWEB/BOOTSTRAP
- Sincronía: [CSS: v15-css-inventario-seminuevosmex.net-inventario.css] + [JS: v15-javascript-inventario-seminuevosmex.net-inventario.js] + [HTML: v15-html-inventario-seminuevosmex.net-inventario.html]
+ SEMINUEVOSMEX INVENTARIO – VERSIÓN 15.1 REFACTORIZADA (2025-10-24) – ODOO QWEB/BOOTSTRAP
+ Sincronía: [CSS: v15.1-css-refactorizado] + [JS: v15.1-javascript-refactorizado] + [HTML: v15.1-html-refactorizado]
  Entorno: Odoo QWeb/SaaS (Bootstrap nativo) – Cumple reglas y nomenclatura Odoo Bootstrap
-------------------------------------------------------------------------------
+ 
+ DEPURACIÓN v15.0 → v15.1:
+   - Consol.idar variables CSS subutilizadas
+   - Eliminar media queries duplicadas
+   - Verificar reutilización consistente de tokens de diseño
+   
  FUNCIONALIDAD PRINCIPAL:
    - Glass morphism avanzado en filtros, tarjetas y popover interactivo
    - Dashboard responsive: desktop y móvil, bottom sheet en mobile
@@ -1424,6 +1429,23 @@ tr.highlighted-shared.viewed-row {
 .filter-options::-webkit-scrollbar-track { background: rgba(124, 58, 237, 0.1); border-radius: 3px; }
 .filter-options::-webkit-scrollbar-thumb { background: var(--brand-purple); border-radius: 3px; }
 .filter-options::-webkit-scrollbar-thumb:hover { background: var(--brand-dark-purple); }
+
+/* Labels de filtros: hover effect sin onmouseover inline (v15.1 refactorización) */
+.filter-option-label--unselected:hover {
+  background-color: rgba(124, 58, 237, 0.1) !important;
+  border-color: rgba(124, 58, 237, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Botón limpiar filtro: hover effect declarativo */
+.filter-clear-btn--active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4) !important;
+}
+
+.filter-clear-btn--active {
+  transition: all 0.2s ease;
+}
 
 /* Accesibilidad: outline y enfoque */
 .filter-header-btn:focus,
