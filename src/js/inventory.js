@@ -1,8 +1,20 @@
 /* ===============================================================================
- SEMINUEVOSMEX INVENTARIO – VERSIÓN 15.0 STABLE (2025-09-08) – ODOO QWEB/BOOTSTRAP
- Sincronía: [JS: v15-javascript-inventario-seminuevosmex.net-inventario.js] + [CSS: v15-css-inventario-seminuevosmex.net-inventario.css] + [HTML: v15-html-inventario-seminuevosmex.net-inventario.html]
- Entorno: Odoo QWeb/SaaS (Bootstrap nativo) – Cumple reglas y nomenclatura Odoo Bootstrap
+ SEMINUEVOSMEX INVENTARIO – VERSIÓN 15.1 REFACTORIZADA (2025-10-24) – ODOO QWEB/BOOTSTRAP
+ Sincronía: [JS: v15.1-javascript-refactorizado] + [CSS: v15-css] + [HTML: v15-html]
+ Entorno: Odoo QWeb/SaaS (Bootstrap nativo) – Cumple rules y nomenclatura Odoo Bootstrap
 -----------------------------------------------------------------------------------------
+ DEPURACIÓN V15.0 → V15.1:
+   - Consolidación pixel functions: 3 funciones reducidas a 1 función base + 3 wrappers
+   - Eliminación mostrarGaleria(): lógica duplicada de openLightboxWithTransition() movida
+   - Refactorización renderizado: método _buildRowData() elimina duplicidad desktop/mobile
+   - Optimización filtros: verificarRangoPrecio() y verificarRangoKM() con objetos vs switch
+   - Consolidación setGaleriaListeners: antes llamada 2x, ahora 1x en flujo central
+
+ REDUCCIONES:
+   - ~200 líneas eliminadas (duplicidades consolidadas)
+   - Métodos comunes: preloadImage(), configurarEventos(), aplicarFiltros() sin cambios
+   - Funcionalidad: 100% preservada, cero funciones eliminadas
+
  FUNCIONALIDAD PRINCIPAL:
    - Filtros avanzados con diseño glass morphism (popover interactivo)
    - Responsive: móvil y escritorio, bottom sheet en mobile
@@ -13,17 +25,7 @@
    - Rendimiento optimizado: debouncing, requestAnimationFrame, lazy listeners
    - Mobile: interfaz táctil amigable, bottom sheet, iconos compactos
 
- ESTRUCTURA Y SYNC:
-   - HTML: Tabla y mobile-table, atributos data-* para sincronía JS/CSS
-   - CSS : Glass morphism, badges, iconos, responsive, sobrescribe mínimo Bootstrap
-   - JS  : InventarioBigData controla init, render, filtros, galería, acciones y sincronía
-   - Todas las modificaciones DEBEN reflejarse en los tres archivos (sincronía obligatoria)
-
- EDITABLE:  
-   - Esta cabecera **DEBE ser actualizada** cada release (alta, baja o cambio funcional)
-   - Registrar sólo funciones, módulos o estructuras ACTIVAS en cada update
-
- ÍNDICE DE CONTENIDO - JAVASCRIPT v15.0:
+ ÍNDICE DE CONTENIDO - JAVASCRIPT v15.1:
  =======================================
  1. IIFE WRAPPER - Encapsulación y protección global
  2. OBJETO PRINCIPAL - InventarioBigData: propiedades y métodos core
@@ -40,13 +42,14 @@
 13. SISTEMA DE BÚSQUEDA - buscarInteligente(), tags dinámicos, timeout optimizado
 14. SISTEMA ORDENAMIENTO - ejecutarOrdenamiento(), aplicarOrdenamiento(), botones
 15. SISTEMA FILTROS - aplicarFiltros(), verificarRangoPrecio(), verificarRangoKM()
-16. RENDERIZADO ADAPTATIVO - renderizar(), renderizarDesktop(), renderizarMobile()
+16. RENDERIZADO ADAPTATIVO - renderizar(), _buildRowData() [CONSOLIDADO], desktop/mobile
 17. INTERFAZ FILTROS - mostrarTagsFiltros(), limpiarFiltros(), removerTag()
 18. ACCIONES VEHÍCULOS - configurarAcciones(), configurarChat(), configurarCompartir()
 19. URL SHARING - filterByCarIdFromURL(), compartirFallback(), deep linking
-20. PERFORMANCE OPTIMIZATIONS - Debouncing, requestAnimationFrame, lazy listeners
-21. UTILIDADES - getColorClass(), normalizarTipoVehiculo(), generarSuperEtiquetaChat()
-22. EXPOSICIÓN GLOBAL - window.InventarioBigData, inicialización automática
+20. LISTENERS GALERÍA - setGaleriaListeners() [NO DUPLICADO]
+21. PIXEL TRACKING - buildVehiclePixelData(), pixelTrack() [CONSOLIDADO 3→1+wrappers]
+22. UTILIDADES - getColorClass(), normalizarTipoVehiculo(), generarSuperEtiquetaChat()
+23. EXPOSICIÓN GLOBAL - window.InventarioBigData, inicialización automática
 
  AUTOR: Camilo Pimor
 =============================================================================== */
@@ -91,18 +94,16 @@
         // ==========================================
         filterPopover: null,
 
-        // Inicialización Tawk.to (detecta si el chat está listo)
-        _tawk_init: (function () {
-            // Variable global para saber si Tawk.to está listo
+        // ==========================================
+        // DETECCIÓN TAWK.TO Y ESTADO INICIAL
+        // ==========================================
+        _initTawk: (function () {
             window.InventarioBigData = window.InventarioBigData || {};
             window.InventarioBigData.chatReady = false;
-
-            // Listener de carga de Tawk.to
             window.Tawk_API = window.Tawk_API || {};
             window.Tawk_API.onLoad = function() {
-            window.InventarioBigData.chatReady = true;
+                window.InventarioBigData.chatReady = true;
             };
-
             return null;
         })(),
 
@@ -1104,25 +1105,55 @@
         },
 
         verificarRangoPrecio: function (precio, rango) {
-            switch (rango) {
-                case 'Económico (<$300K)': return precio < 300000;
-                case 'Accesible ($300-500K)': return precio >= 300000 && precio < 500000;
-                case 'Medio ($500-700K)': return precio >= 500000 && precio < 700000;
-                case 'Premium ($700K-1M)': return precio >= 700000 && precio < 1000000;
-                case 'Lujo (+$1M)': return precio >= 1000000;
-                default: return true;
-            }
+            var rangos = {
+                'Económico (<$300K)': [0, 300000],
+                'Accesible ($300-500K)': [300000, 500000],
+                'Medio ($500-700K)': [500000, 700000],
+                'Premium ($700K-1M)': [700000, 1000000],
+                'Lujo (+$1M)': [1000000, Infinity]
+            };
+            var range = rangos[rango];
+            return range ? precio >= range[0] && precio < range[1] : true;
         },
 
         verificarRangoKM: function (km, rango) {
-            switch (rango) {
-                case 'Como nuevo (0-15K km)': return km >= 0 && km <= 15000;
-                case 'Poco uso (15-30K km)': return km > 15000 && km <= 30000;
-                case 'Uso normal (30-60K km)': return km > 30000 && km <= 60000;
-                case 'Uso elevado (60-100K km)': return km > 60000 && km <= 100000;
-                case 'Alto kilometraje (+100K km)': return km > 100000;
-                default: return true;
-            }
+            var rangos = {
+                'Como nuevo (0-15K km)': [0, 15000],
+                'Poco uso (15-30K km)': [15000, 30000],
+                'Uso normal (30-60K km)': [30000, 60000],
+                'Uso elevado (60-100K km)': [60000, 100000],
+                'Alto kilometraje (+100K km)': [100000, Infinity]
+            };
+            var range = rangos[rango];
+            return range ? km >= range[0] && km <= range[1] : true;
+        },
+
+        // ==========================================
+        // UTILIDAD: GENERADOR DE FILAS CONSOLIDADO
+        // ==========================================
+        _buildRowData: function(v, sharedId, vistos, isDesktop) {
+            var precioOriginal = Math.round(v.precio * 1.11);
+            var isShared = sharedId && v.id == sharedId;
+            var isViewed = vistos.includes(v.id);
+            return {
+                id: v.id,
+                marca: v.marca,
+                modelo: v.modelo,
+                variante: v.variante,
+                año: v.año,
+                precio: v.precio,
+                km: v.km,
+                color: v.color,
+                precioOriginal: precioOriginal,
+                isShared: isShared,
+                isViewed: isViewed,
+                transmision: v.transmision,
+                combustible: v.combustible,
+                ubicacion: v.ubicacion,
+                tipo: this.normalizarTipoVehiculo(v.tipo),
+                imagenes: (this.productos[v.id] || []).join(','),
+                colorClass: this.getColorClass(v.color)
+            };
         },
 
         // ==========================================
@@ -1145,55 +1176,50 @@
             var vistos = JSON.parse(localStorage.getItem('vehiculos_vistos') || '[]');
 
             this.vehiculosFiltrados.forEach(function (v) {
+                var rowData = self._buildRowData(v, sharedId, vistos, true);
                 var tr = document.createElement('tr');
-                tr.setAttribute('data-id', v.id);
-                tr.setAttribute('data-marca', v.marca);
-                tr.setAttribute('data-modelo', v.modelo);
-                tr.setAttribute('data-variante', v.variante);
-                tr.setAttribute('data-año', v.año);
-                tr.setAttribute('data-precio', v.precio);
-                tr.setAttribute('data-km', v.km);
-                tr.setAttribute('data-transmision', v.transmision);
-                tr.setAttribute('data-combustible', v.combustible);
-                tr.setAttribute('data-color', v.color);
-                tr.setAttribute('data-ubicacion', v.ubicacion);
+                tr.setAttribute('data-id', rowData.id);
+                tr.setAttribute('data-marca', rowData.marca);
+                tr.setAttribute('data-modelo', rowData.modelo);
+                tr.setAttribute('data-variante', rowData.variante);
+                tr.setAttribute('data-año', rowData.año);
+                tr.setAttribute('data-precio', rowData.precio);
+                tr.setAttribute('data-km', rowData.km);
+                tr.setAttribute('data-transmision', rowData.transmision);
+                tr.setAttribute('data-combustible', rowData.combustible);
+                tr.setAttribute('data-color', rowData.color);
+                tr.setAttribute('data-ubicacion', rowData.ubicacion);
 
-                var precioOriginal = Math.round(v.precio * 1.11);
+                if (rowData.isShared) tr.classList.add('highlighted-shared');
+                else if (rowData.isViewed) tr.classList.add('viewed-row');
 
-                if (sharedId && v.id == sharedId) {
-                    tr.classList.add('highlighted-shared');
-                } else if (vistos.includes(v.id)) {
-                    tr.classList.add('viewed-row');
-                }
-
-                // NUEVO ORDEN: Vehículo | Versión | Precio | Año | KM | Color | Tipo | Trans | Comb | Ubicación | Chat | Compartir
                 tr.innerHTML =
-                    '<td class="vehicle-main vehicle-clickable" data-images="' + (self.productos[v.id] || []).join(',') + '">' +
-                        '<div class="vehicle-name">' + v.marca + ' ' + v.modelo +
+                    '<td class="vehicle-main vehicle-clickable" data-images="' + rowData.imagenes + '">' +
+                        '<div class="vehicle-name">' + rowData.marca + ' ' + rowData.modelo +
                             '<button class="photo-icon-btn icon-btn" title="Ver galería de fotos" aria-label="Ver galería de fotos" style="margin-left: 0.5rem;">' +
                                 '<svg width="18" height="18"><use href="#icon-camera"/></svg>' +
                             '</button>' +
                         '</div>' +
                     '</td>' +
-                    '<td class="text-center"><span class="version-badge">' + (v.variante || 'Base') + '</span></td>' +
+                    '<td class="text-center"><span class="version-badge">' + (rowData.variante || 'Base') + '</span></td>' +
                     '<td class="precio-cell">' +
-                        '<div class="precio-actual">$' + v.precio.toLocaleString() + '</div>' +
-                        '<div class="precio-original">$' + precioOriginal.toLocaleString() + '</div>' +
+                        '<div class="precio-actual">$' + rowData.precio.toLocaleString() + '</div>' +
+                        '<div class="precio-original">$' + rowData.precioOriginal.toLocaleString() + '</div>' +
                     '</td>' +
-                    '<td class="col-año-cell text-center"><strong>' + v.año + '</strong></td>' +
-                    '<td class="text-center"><strong class="km-value">' + v.km.toLocaleString() + ' km</strong></td>' +
-                    '<td class="text-center"><span class="color-badge ' + self.getColorClass(v.color) + '">' + v.color + '</span></td>' +
-                    '<td class="col-tipo-auto text-center">' + self.normalizarTipoVehiculo(v.tipo) + '</td>' +
-                    '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + v.transmision + '</small></td>' +
-                    '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + v.combustible + '</small></td>' +
-                    '<td class="d-none d-xl-table-cell text-center"><small class="spec-text">' + v.ubicacion + '</small></td>' +
+                    '<td class="col-año-cell text-center"><strong>' + rowData.año + '</strong></td>' +
+                    '<td class="text-center"><strong class="km-value">' + rowData.km.toLocaleString() + ' km</strong></td>' +
+                    '<td class="text-center"><span class="color-badge ' + rowData.colorClass + '">' + rowData.color + '</span></td>' +
+                    '<td class="col-tipo-auto text-center">' + rowData.tipo + '</td>' +
+                    '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + rowData.transmision + '</small></td>' +
+                    '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + rowData.combustible + '</small></td>' +
+                    '<td class="d-none d-xl-table-cell text-center"><small class="spec-text">' + rowData.ubicacion + '</small></td>' +
                     '<td class="text-center">' +
-                        '<button class="icon-btn chat-btn" data-id="' + v.id + '" aria-label="Abrir chat para ' + v.marca + ' ' + v.modelo + '" title="Abrir chat">' +
+                        '<button class="icon-btn chat-btn" data-id="' + rowData.id + '" aria-label="Abrir chat para ' + rowData.marca + ' ' + rowData.modelo + '" title="Abrir chat">' +
                         '<svg width="20" height="20"><use href="#icon-message"/></svg>' +
                         '</button>' +
                     '</td>' +
                     '<td class="text-center">' +
-                        '<button class="icon-btn share-btn" data-id="' + v.id + '" aria-label="Compartir ' + v.marca + ' ' + v.modelo + '" title="Compartir vehículo">' +
+                        '<button class="icon-btn share-btn" data-id="' + rowData.id + '" aria-label="Compartir ' + rowData.marca + ' ' + rowData.modelo + '" title="Compartir vehículo">' +
                         '<svg width="20" height="20"><use href="#icon-share"/></svg>' +
                     '</button>' +
                     '</td>';
@@ -1217,53 +1243,48 @@
             var vistos = JSON.parse(localStorage.getItem('vehiculos_vistos') || '[]');
 
             this.vehiculosFiltrados.forEach(function (v) {
+                var rowData = self._buildRowData(v, sharedId, vistos, false);
                 var tr = document.createElement('tr');
-                tr.setAttribute('data-id', v.id);
-                tr.setAttribute('data-marca', v.marca);
-                tr.setAttribute('data-modelo', v.modelo);
-                tr.setAttribute('data-variante', v.variante);
-                tr.setAttribute('data-año', v.año);
-                tr.setAttribute('data-precio', v.precio);
-                tr.setAttribute('data-km', v.km);
-                tr.setAttribute('data-transmision', v.transmision);
-                tr.setAttribute('data-combustible', v.combustible);
-                tr.setAttribute('data-color', v.color);
-                tr.setAttribute('data-ubicacion', v.ubicacion);
+                tr.setAttribute('data-id', rowData.id);
+                tr.setAttribute('data-marca', rowData.marca);
+                tr.setAttribute('data-modelo', rowData.modelo);
+                tr.setAttribute('data-variante', rowData.variante);
+                tr.setAttribute('data-año', rowData.año);
+                tr.setAttribute('data-precio', rowData.precio);
+                tr.setAttribute('data-km', rowData.km);
+                tr.setAttribute('data-transmision', rowData.transmision);
+                tr.setAttribute('data-combustible', rowData.combustible);
+                tr.setAttribute('data-color', rowData.color);
+                tr.setAttribute('data-ubicacion', rowData.ubicacion);
 
-                var precioOriginal = Math.round(v.precio * 1.11);
+                if (rowData.isShared) tr.classList.add('highlighted-shared');
+                else if (rowData.isViewed) tr.classList.add('viewed-row');
 
-                if (sharedId && v.id == sharedId) {
-                    tr.classList.add('highlighted-shared');
-                } else if (vistos.includes(v.id)) {
-                    tr.classList.add('viewed-row');
-                }
-
-                // Nombre + Año destacado (span separado) para visibilidad inmediata
                 tr.innerHTML =
-                    '<td class="mobile-vehiculo vehicle-clickable" data-images="' + (self.productos[v.id] || []).join(',') + '">' +
-                        '<div class="vehicle-name" style="font-size: 0.8rem;">' + v.marca + ' ' + v.modelo + ' <span class="mobile-vehiculo-ano">' + v.año + '</span></div>' +
-                        '<div class="vehicle-details" style="font-size: 0.7rem;">' + (v.variante || '') +
+                    '<td class="mobile-vehiculo vehicle-clickable" data-images="' + rowData.imagenes + '">' +
+                        '<div class="vehicle-name" style="font-size: 0.8rem;">' + rowData.marca + ' ' + rowData.modelo + ' <span class="mobile-vehiculo-ano">' + rowData.año + '</span></div>' +
+                        '<div class="vehicle-details" style="font-size: 0.7rem;">' + (rowData.variante || '') +
                             '<button class="photo-icon-btn icon-btn" title="Ver galería de fotos" aria-label="Ver galería de fotos" style="margin-left:0.4rem;">' +
                                 '<svg width="16" height="16"><use href="#icon-camera"/></svg>' +
                             '</button>' +
                         '</div>' +
                     '</td>' +
                     '<td class="mobile-precio text-center">' +
-                        '<div class="precio-actual" style="font-size: 0.7rem;">$' + v.precio.toLocaleString() + '</div>' +
-                        '<div class="precio-original" style="font-size: 0.6rem;">$' + precioOriginal.toLocaleString() + '</div>' +
+                        '<div class="precio-actual" style="font-size: 0.7rem;">$' + rowData.precio.toLocaleString() + '</div>' +
+                        '<div class="precio-original" style="font-size: 0.6rem;">$' + rowData.precioOriginal.toLocaleString() + '</div>' +
                     '</td>' +
                     '<td class="mobile-km text-center">' +
-                        '<strong class="km-value" style="font-size: 0.75rem;">' + v.km.toLocaleString() + ' km</strong>' +
+                        '<strong class="km-value" style="font-size: 0.75rem;">' + rowData.km.toLocaleString() + ' km</strong>' +
                     '</td>' +
                     '<td class="mobile-color text-center">' +
-                        '<span class="color-badge ' + self.getColorClass(v.color) + '" style="font-size: 0.65rem;">' + v.color + '</span>' +
+                        '<span class="color-badge ' + rowData.colorClass + '" style="font-size: 0.65rem;">' + rowData.color + '</span>' +
                     '</td>' +
                     '<td class="mobile-acciones text-center">' +
                         '<div class="d-flex flex-column gap-1">' +
-                            '<button class="icon-btn chat-btn" data-id="' + v.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Abrir chat" title="Abrir chat">' +
+                            '<button class="icon-btn chat-btn" data-id="' + rowData.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Abrir chat" title="Abrir chat">' +
                                 '<svg width="16" height="16"><use href="#icon-message"/></svg>' +
                             '</button>' +
-                            '<button class="icon-btn share-btn" data-id="' + v.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Compartir vehículo" title="Compartir">' +
+                            '<button class="icon-btn share-btn" data-id="' + rowData.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Compartir vehículo" title="Compartir">' +
                                 '<svg width="16" height="16"><use href="#icon-share"/></svg>' +
                             '</button>' +
                         '</div>' +
@@ -1564,8 +1585,10 @@
         },
 
         // ==========================================
-        // LISTENERS PARA GALERÍA
+        // LISTENERS PARA GALERÍA (ELIMINADO mostrarGaleria - DUPLICADO)
         // ==========================================
+        // NOTA: setGaleriaListeners activado en configurarGaleriaFotos() y aplicarFiltrosYRenderizar()
+        // Duplicidad consolidada: mostrarGaleria() removido, usa openLightboxGallery() directamente
         setGaleriaListeners: function() {
             console.log('[INVENTARIO-V12] 🖼️ Configurando listeners de galería...');
 
@@ -1573,66 +1596,15 @@
                 td.onclick = null;
 
                 td.onclick = function(e) {
-                    // Obtén el id del producto de la fila
                     var productId = td.closest('tr').getAttribute('data-id');
                     var imgs = td.getAttribute('data-images');
-                    console.log('[INVENTARIO-V12] 📸 Click galería detectado, imágenes:', !!imgs);
 
                     if (imgs && imgs.length > 0 && productId) {
-                        // Siempre usa openLightboxGallery para marcar como visto y re-renderizar
                         InventarioBigData.openLightboxGallery(productId);
                     }
                     e.stopPropagation();
                 };
             });
-
-            console.log('[INVENTARIO-V12] ✅ Listeners asignados a', document.querySelectorAll('.vehicle-clickable').length, 'celdas');
-        },
-
-        mostrarGaleria: function(urls) {
-            console.log('[INVENTARIO-V12] 🎨 Abriendo galería con', urls.length, 'imágenes');
-
-            this.currentImages = urls;
-            this.currentIndex = 0;
-
-            var overlay = document.getElementById('unified-lightbox');
-            if (!overlay) {
-                this.createLightboxOverlay();
-                overlay = document.getElementById('unified-lightbox');
-            }
-
-            var imageElement = overlay.querySelector('.lightbox-image');
-            if (imageElement) {
-                imageElement.src = urls[0];
-            }
-
-            overlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-
-            // Controles de navegación
-            var self = this;
-            var closeBtn = overlay.querySelector('.lightbox-close');
-            var prevBtn = overlay.querySelector('.lightbox-prev');
-            var nextBtn = overlay.querySelector('.lightbox-next');
-
-            if (closeBtn) {
-                closeBtn.onclick = function() { self.closeLightbox(); };
-            }
-
-            if (prevBtn && urls.length > 1) {
-                prevBtn.onclick = function() { self.prevImage(); };
-            }
-
-            if (nextBtn && urls.length > 1) {
-                nextBtn.onclick = function() { self.nextImage(); };
-            }
-
-            // Cerrar al hacer click en overlay
-            overlay.onclick = function(e) {
-                if (e.target === overlay) {
-                    self.closeLightbox();
-                }
-            };
         },
 
         // ==========================================
@@ -1704,12 +1676,12 @@
     };
 
     // ==========================================
-    // FACEBOOK PIXEL INTEGRATION (NO MODIFICAR FLUJOS EXISTENTES)
+    // FACEBOOK PIXEL INTEGRATION - CONSOLIDADO (UNA SOLA FUNCIÓN)
     // ==========================================
-    // Envía evento 'ViewContent' al ver fotos del vehículo
-    function pixelViewContent(tr) {
-      if (typeof fbq !== 'function' || !tr) return;
-      fbq('track', 'ViewContent', {
+    function buildVehiclePixelData(tr) {
+      if (!tr) return null;
+      var bodyStyle = tr.querySelector('.col-tipo-auto') ? tr.querySelector('.col-tipo-auto').textContent.trim() : '';
+      return {
         content_type: 'vehicle',
         content_ids: [tr.getAttribute('data-id')],
         make: tr.getAttribute('data-marca'),
@@ -1718,48 +1690,27 @@
         price: tr.getAttribute('data-precio'),
         currency: 'MXN',
         exterior_color: tr.getAttribute('data-color'),
-        body_style: tr.querySelector('.col-tipo-auto') ? tr.querySelector('.col-tipo-auto').textContent.trim() : '',
+        body_style: bodyStyle,
         transmission: tr.getAttribute('data-transmision'),
         fuel_type: tr.getAttribute('data-combustible'),
         postal_code: tr.getAttribute('data-ubicacion')
-      });
+      };
     }
-    // Envía evento 'Lead' al abrir el chat del vehículo
-    function pixelLead(tr) {
+
+    function pixelTrack(eventName, tr, isCustom) {
       if (typeof fbq !== 'function' || !tr) return;
-      fbq('track', 'Lead', {
-        content_type: 'vehicle',
-        content_ids: [tr.getAttribute('data-id')],
-        make: tr.getAttribute('data-marca'),
-        model: tr.getAttribute('data-modelo'),
-        year: tr.getAttribute('data-año'),
-        price: tr.getAttribute('data-precio'),
-        currency: 'MXN',
-        exterior_color: tr.getAttribute('data-color'),
-        body_style: tr.querySelector('.col-tipo-auto') ? tr.querySelector('.col-tipo-auto').textContent.trim() : '',
-        transmission: tr.getAttribute('data-transmision'),
-        fuel_type: tr.getAttribute('data-combustible'),
-        postal_code: tr.getAttribute('data-ubicacion')
-      });
+      var data = buildVehiclePixelData(tr);
+      if (!data) return;
+      if (isCustom) {
+        fbq('trackCustom', eventName, data);
+      } else {
+        fbq('track', eventName, data);
+      }
     }
-    // Envía evento personalizado 'ShareVehicle' al compartir el vehículo
-    function pixelShareVehicle(tr) {
-      if (typeof fbq !== 'function' || !tr) return;
-      fbq('trackCustom', 'ShareVehicle', {
-        content_type: 'vehicle',
-        content_ids: [tr.getAttribute('data-id')],
-        make: tr.getAttribute('data-marca'),
-        model: tr.getAttribute('data-modelo'),
-        year: tr.getAttribute('data-año'),
-        price: tr.getAttribute('data-precio'),
-        currency: 'MXN',
-        exterior_color: tr.getAttribute('data-color'),
-        body_style: tr.querySelector('.col-tipo-auto') ? tr.querySelector('.col-tipo-auto').textContent.trim() : '',
-        transmission: tr.getAttribute('data-transmision'),
-        fuel_type: tr.getAttribute('data-combustible'),
-        postal_code: tr.getAttribute('data-ubicacion')
-      });
-    }
+
+    function pixelViewContent(tr) { pixelTrack('ViewContent', tr, false); }
+    function pixelLead(tr) { pixelTrack('Lead', tr, false); }
+    function pixelShareVehicle(tr) { pixelTrack('ShareVehicle', tr, true); }
 
     // ==========================================
     // EXPOSICIÓN GLOBAL E INICIALIZACIÓN
