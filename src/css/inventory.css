@@ -1415,10 +1415,6 @@ tr.highlighted-shared.viewed-row {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 @keyframes highlight-fade {
   0% { box-shadow: 0 0 0 6px #262633cc; }
   100% { box-shadow: 0 0 0 3px #26263355; }
@@ -1501,10 +1497,6 @@ tr.highlighted-shared.viewed-row {
   border-top: 3px solid var(--brand-purple);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 .table-responsive.loading {
   opacity: 0.3;
