@@ -861,6 +861,31 @@ tr.highlighted-shared.viewed-row {
   text-shadow: 0 0 2px #0a0a0a;
 }
 
+/* Precio Financiado - Columna nueva con 60 meses */
+.precio-financiado-cell {
+  text-align: center;
+  padding: 0.5rem 0.75rem !important;
+  background: rgba(10, 10, 30, 0.3);
+  border-left: 1px solid rgba(124, 58, 237, 0.2);
+  border-right: 1px solid rgba(124, 58, 237, 0.2);
+}
+.precio-financiado-label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+.precio-financiado {
+  color: var(--brand-purple);
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  font-family: 'Courier New', monospace;
+}
+
 /* SISTEMA RESPONSIVO (mobile-optimized) */
 .mobile-optimized { display: none; }
 @media (max-width: 768px) { 

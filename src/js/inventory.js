@@ -1143,10 +1143,23 @@
         },
 
         // ==========================================
+        // UTILIDAD: CALCULO PRECIO FINANCIADO
+        // ==========================================
+        // Calcula cuota mensual de 60 meses al 18% anual
+        _calculateFinancedPrice: function(precio) {
+            var tasaMensual = 0.18 / 12; // 1.5% mensual
+            var numMeses = 60;
+            var meses = (precio * tasaMensual * Math.pow(1 + tasaMensual, numMeses)) / 
+                        (Math.pow(1 + tasaMensual, numMeses) - 1);
+            return Math.round(meses);
+        },
+
+        // ==========================================
         // UTILIDAD: GENERADOR DE FILAS CONSOLIDADO
         // ==========================================
         _buildRowData: function(v, sharedId, vistos, isDesktop) {
             var precioOriginal = Math.round(v.precio * 1.11);
+            var precioFinanciado = this._calculateFinancedPrice(v.precio);
             var isShared = sharedId && v.id == sharedId;
             var isViewed = vistos.includes(v.id);
             return {
@@ -1159,6 +1172,7 @@
                 km: v.km,
                 color: v.color,
                 precioOriginal: precioOriginal,
+                precioFinanciado: precioFinanciado,
                 isShared: isShared,
                 isViewed: isViewed,
                 transmision: v.transmision,
@@ -1209,16 +1223,16 @@
 
                 tr.innerHTML =
                     '<td class="vehicle-main vehicle-clickable" data-images="' + rowData.imagenes + '">' +
-                        '<div class="vehicle-name">' + rowData.marca + ' ' + rowData.modelo +
-                            '<button class="photo-icon-btn icon-btn" title="Ver galería de fotos" aria-label="Ver galería de fotos" style="margin-left: 0.5rem;">' +
-                                '<svg width="18" height="18"><use href="#icon-camera"/></svg>' +
-                            '</button>' +
-                        '</div>' +
+                        '<div class="vehicle-name">' + rowData.marca + ' ' + rowData.modelo + '</div>' +
                     '</td>' +
                     '<td class="text-center"><span class="version-badge">' + (rowData.variante || 'Base') + '</span></td>' +
                     '<td class="precio-cell">' +
                         '<div class="precio-actual">$' + rowData.precio.toLocaleString() + '</div>' +
                         '<div class="precio-original">$' + rowData.precioOriginal.toLocaleString() + '</div>' +
+                    '</td>' +
+                    '<td class="precio-financiado-cell text-center">' +
+                        '<small class="precio-financiado-label">60 meses</small>' +
+                        '<div class="precio-financiado">$' + rowData.precioFinanciado.toLocaleString() + '</div>' +
                     '</td>' +
                     '<td class="col-año-cell text-center"><strong>' + rowData.año + '</strong></td>' +
                     '<td class="text-center"><strong class="km-value">' + rowData.km.toLocaleString() + ' km</strong></td>' +
@@ -1227,6 +1241,11 @@
                     '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + rowData.transmision + '</small></td>' +
                     '<td class="d-none d-lg-table-cell text-center"><small class="spec-text">' + rowData.combustible + '</small></td>' +
                     '<td class="d-none d-xl-table-cell text-center"><small class="spec-text">' + rowData.ubicacion + '</small></td>' +
+                    '<td class="text-center">' +
+                        '<button class="photo-icon-btn icon-btn" data-id="' + rowData.id + '" title="Ver galería de fotos" aria-label="Ver galería de fotos">' +
+                            '<svg width="18" height="18"><use href="#icon-camera"/></svg>' +
+                        '</button>' +
+                    '</td>' +
                     '<td class="text-center">' +
                         '<button class="icon-btn chat-btn" data-id="' + rowData.id + '" aria-label="Abrir chat para ' + rowData.marca + ' ' + rowData.modelo + '" title="Abrir chat">' +
                         '<svg width="20" height="20"><use href="#icon-message"/></svg>' +
@@ -1277,11 +1296,7 @@
                 tr.innerHTML =
                     '<td class="mobile-vehiculo vehicle-clickable" data-images="' + rowData.imagenes + '">' +
                         '<div class="vehicle-name" style="font-size: 0.8rem;">' + rowData.marca + ' ' + rowData.modelo + ' <span class="mobile-vehiculo-ano">' + rowData.año + '</span></div>' +
-                        '<div class="vehicle-details" style="font-size: 0.7rem;">' + (rowData.variante || '') +
-                            '<button class="photo-icon-btn icon-btn" title="Ver galería de fotos" aria-label="Ver galería de fotos" style="margin-left:0.4rem;">' +
-                                '<svg width="16" height="16"><use href="#icon-camera"/></svg>' +
-                            '</button>' +
-                        '</div>' +
+                        '<div class="vehicle-details" style="font-size: 0.7rem;">' + (rowData.variante || '') + '</div>' +
                     '</td>' +
                     '<td class="mobile-precio text-center">' +
                         '<div class="precio-actual" style="font-size: 0.7rem;">$' + rowData.precio.toLocaleString() + '</div>' +
@@ -1295,6 +1310,9 @@
                     '</td>' +
                     '<td class="mobile-acciones text-center">' +
                         '<div class="d-flex flex-column gap-1">' +
+                            '<button class="photo-icon-btn icon-btn" data-id="' + rowData.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Ver galería" title="Ver galería">' +
+                                '<svg width="16" height="16"><use href="#icon-camera"/></svg>' +
+                            '</button>' +
                             '<button class="icon-btn chat-btn" data-id="' + rowData.id + '" style="font-size: 0.65rem; padding: 0.125rem 0.25rem;" aria-label="Abrir chat" title="Abrir chat">' +
                                 '<svg width="16" height="16"><use href="#icon-message"/></svg>' +
                             '</button>' +
