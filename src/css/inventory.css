@@ -2016,7 +2016,7 @@ tr.highlighted-shared.viewed-row {
 @media (max-width: 600px) {
   .whatsapp-floating-widget {
     top: unset;
-    bottom: 85px;
+    bottom: 20px;
     right: 16px;
     border-radius: 20px;
     padding: 0.9em 1.2em;

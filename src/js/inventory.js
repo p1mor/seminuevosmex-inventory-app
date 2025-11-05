@@ -1997,7 +1997,7 @@
         var popup = document.createElement('div');
         popup.id = 'whatsapp-popup-options';
         popup.style.cssText = `
-          position: absolute;
+          position: fixed;
           bottom: 70px;
           right: 12px;
           background: rgba(255, 255, 255, 0.98);
@@ -2047,7 +2047,7 @@
           // Opciones genéricas cuando no hay vehículo seleccionado
           opcionesHTML = `
             <div style="margin-bottom: 12px; text-align: center;">
-              <div style="font-size: 14px; color: #25d366; font-weight: 600; margin-bottom: 4px;">💬 ¿En qué te ayudamos?</div>
+              <div style="font-size: 14px; color: #25d366; font-weight: 600; margin-bottom: 4px;">👩🏼 ¡Hola, Soy Sofi! ¿En qué te ayudo?</div>
               <div style="font-size: 12px; color: #666; margin-bottom: 12px;">Selecciona una opción</div>
             </div>
             <div class="whatsapp-option" data-message="busco un seminuevo" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
