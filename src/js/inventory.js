@@ -1887,41 +1887,48 @@
       const WHATSAPP_NUMBER = '+5212215841832'; // Número correcto: +52 1 221 584 1832
 
       // Función para generar mensaje dinámico basado en contexto o vehículo específico
-      function generarMensajeWhatsApp(vehicleData) {
-        var mensaje = '¡Hola! Me interesa información sobre vehículos en SeminuevosMex.net';
+      function generarMensajeWhatsApp(vehicleData, mensajePersonalizado) {
+        var mensaje = '¡Hola Sofi! ';
 
-        // Si se proporciona datos específicos del vehículo
-        if (vehicleData) {
-          var marca = vehicleData.marca || '';
-          var modelo = vehicleData.modelo || '';
-          var variante = vehicleData.variante || '';
-          var precio = vehicleData.precio || '';
-          var km = vehicleData.km || '';
-          var color = vehicleData.color || '';
-          var año = vehicleData.año || '';
-          var id = vehicleData.id || '';
-          var ubicacion = vehicleData.ubicacion || '';
-
-          mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo;
-          if (variante) mensaje += ' (' + variante + ')';
-          mensaje += ' por $' + precio;
-          if (km) mensaje += ', con ' + km + ' km';
-          if (color) mensaje += ', color ' + color;
-          if (año) mensaje += ', modelo ' + año;
-          if (ubicacion) mensaje += ', ubicado en ' + ubicacion;
-          mensaje += '. ¿Me pueden dar más información? Vi este vehículo en SeminuevosMex.net';
-          if (id) mensaje += ' (ID: ' + id + ')';
+        // Si hay mensaje personalizado (desde popup), usarlo
+        if (mensajePersonalizado) {
+          mensaje += mensajePersonalizado;
         } else {
-          // Detectar si hay un vehículo específico seleccionado desde URL
-          var urlParams = new URLSearchParams(window.location.search);
-          var vehicleId = urlParams.get('vehicle');
-          var marca = urlParams.get('marca');
-          var modelo = urlParams.get('modelo');
+          // Si se proporciona datos específicos del vehículo
+          if (vehicleData) {
+            var marca = vehicleData.marca || '';
+            var modelo = vehicleData.modelo || '';
+            var variante = vehicleData.variante || '';
+            var precio = vehicleData.precio || '';
+            var km = vehicleData.km || '';
+            var color = vehicleData.color || '';
+            var año = vehicleData.año || '';
+            var id = vehicleData.id || '';
+            var ubicacion = vehicleData.ubicacion || '';
 
-          if (vehicleId && marca && modelo) {
-            mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo + ' (ID: ' + vehicleId + ') que vi en SeminuevosMex.net. ¿Me pueden dar más información?';
-          } else if (marca && modelo) {
-            mensaje = '¡Hola! Me interesa información sobre ' + marca + ' ' + modelo + ' en SeminuevosMex.net. ¿Tienen unidades disponibles?';
+            mensaje += 'Me interesa el ' + marca + ' ' + modelo;
+            if (variante) mensaje += ' (' + variante + ')';
+            mensaje += ' por $' + precio;
+            if (km) mensaje += ', con ' + km + ' km';
+            if (color) mensaje += ', color ' + color;
+            if (año) mensaje += ', modelo ' + año;
+            if (ubicacion) mensaje += ', ubicado en ' + ubicacion;
+            mensaje += '. ¿Me pueden dar más información? Vi este vehículo en https://www.seminuevosmex.net/?vehiculo=' + id;
+          } else {
+            // Detectar si hay un vehículo específico seleccionado desde URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var vehicleId = urlParams.get('vehicle');
+            var marca = urlParams.get('marca');
+            var modelo = urlParams.get('modelo');
+
+            if (vehicleId && marca && modelo) {
+              mensaje += 'Me interesa el ' + marca + ' ' + modelo + ' que vi en https://www.seminuevosmex.net/?vehiculo=' + vehicleId + '. ¿Me pueden dar más información?';
+            } else if (marca && modelo) {
+              mensaje += 'Me interesa información sobre ' + marca + ' ' + modelo + ' en SeminuevosMex.net. ¿Tienen unidades disponibles?';
+            } else {
+              // Mensaje genérico cuando no hay contexto
+              mensaje += 'Estoy buscando un seminuevo en SeminuevosMex.net. ¿Me pueden ayudar?';
+            }
           }
         }
 
@@ -1933,15 +1940,176 @@
         var btn = document.getElementById('whatsapp-floating-widget');
         if (!btn) return;
 
+        // Crear popup de opciones
+        crearPopupOpciones();
+
+        // Event listener para mostrar/ocultar popup
+        var popupVisible = false;
+        var popup = document.getElementById('whatsapp-popup-options');
+
         btn.addEventListener('click', function(e) {
           e.preventDefault();
-          abrirWhatsAppConMensaje();
+          e.stopPropagation();
+
+          if (popupVisible) {
+            ocultarPopup();
+          } else {
+            mostrarPopup();
+          }
+        });
+
+        // Cerrar popup al hacer click fuera
+        document.addEventListener('click', function(e) {
+          if (popupVisible && !btn.contains(e.target) && !popup.contains(e.target)) {
+            ocultarPopup();
+          }
+        });
+
+        function mostrarPopup() {
+          if (!popup) return;
+          popup.style.display = 'block';
+          popupVisible = true;
+
+          // Animación de entrada
+          setTimeout(function() {
+            popup.style.opacity = '1';
+            popup.style.transform = 'translateY(0) scale(1)';
+          }, 10);
+        }
+
+        function ocultarPopup() {
+          if (!popup) return;
+          popup.style.opacity = '0';
+          popup.style.transform = 'translateY(10px) scale(0.95)';
+
+          setTimeout(function() {
+            popup.style.display = 'none';
+            popupVisible = false;
+          }, 150);
+        }
+      }
+
+      // Función para crear el popup de opciones
+      function crearPopupOpciones() {
+        // Verificar si ya existe
+        if (document.getElementById('whatsapp-popup-options')) return;
+
+        var popup = document.createElement('div');
+        popup.id = 'whatsapp-popup-options';
+        popup.style.cssText = `
+          position: absolute;
+          bottom: 70px;
+          right: 12px;
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(37, 211, 102, 0.3);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(37, 211, 102, 0.2);
+          padding: 16px;
+          min-width: 280px;
+          max-width: 320px;
+          z-index: 99998;
+          display: none;
+          opacity: 0;
+          transform: translateY(10px) scale(0.95);
+          transition: all 0.15s ease-out;
+          font-family: 'Poppins', sans-serif;
+        `;
+
+        // Detectar si hay vehículo seleccionado
+        var urlParams = new URLSearchParams(window.location.search);
+        var vehicleId = urlParams.get('vehicle');
+        var marca = urlParams.get('marca');
+        var modelo = urlParams.get('modelo');
+        var tieneVehiculoSeleccionado = vehicleId && marca && modelo;
+
+        var opcionesHTML = '';
+
+        if (tieneVehiculoSeleccionado) {
+          // Opciones cuando hay vehículo seleccionado
+          opcionesHTML = `
+            <div style="margin-bottom: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #25d366; font-weight: 600; margin-bottom: 4px;">🚗 ${marca} ${modelo}</div>
+              <div style="font-size: 12px; color: #666; margin-bottom: 12px;">¿Qué deseas hacer?</div>
+            </div>
+            <div class="whatsapp-option" data-message="busco este seminuevo específicamente. ¿Me das más información?" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              📋 Más información del vehículo
+            </div>
+            <div class="whatsapp-option" data-message="calculame un financiamiento para este ${marca} ${modelo}" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              💰 Calcula financiamiento
+            </div>
+            <div class="whatsapp-option" data-message="recibes mi auto a cuenta por este ${marca} ${modelo}?" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              🔄 Auto a cuenta
+            </div>
+          `;
+        } else {
+          // Opciones genéricas cuando no hay vehículo seleccionado
+          opcionesHTML = `
+            <div style="margin-bottom: 12px; text-align: center;">
+              <div style="font-size: 14px; color: #25d366; font-weight: 600; margin-bottom: 4px;">💬 ¿En qué te ayudamos?</div>
+              <div style="font-size: 12px; color: #666; margin-bottom: 12px;">Selecciona una opción</div>
+            </div>
+            <div class="whatsapp-option" data-message="busco un seminuevo" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              🚗 Busco un seminuevo
+            </div>
+            <div class="whatsapp-option" data-message="calculame un financiamiento" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              💰 Calcula financiamiento
+            </div>
+            <div class="whatsapp-option" data-message="recibes mi auto a cuenta?" style="display: block; padding: 12px 16px; margin-bottom: 8px; background: rgba(37, 211, 102, 0.1); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 12px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; color: #25d366; font-weight: 500;">
+              🔄 Auto a cuenta
+            </div>
+          `;
+        }
+
+        popup.innerHTML = opcionesHTML;
+        document.body.appendChild(popup);
+
+        // Event listeners para las opciones
+        var opciones = popup.querySelectorAll('.whatsapp-option');
+        opciones.forEach(function(opcion) {
+          opcion.addEventListener('click', function() {
+            var mensaje = this.getAttribute('data-message');
+
+            // Obtener datos del vehículo si está seleccionado
+            var vehicleData = null;
+            if (tieneVehiculoSeleccionado) {
+              vehicleData = {
+                id: vehicleId,
+                marca: marca,
+                modelo: modelo
+              };
+            }
+
+            // Abrir WhatsApp con el mensaje personalizado
+            abrirWhatsAppConVehiculo(vehicleData, mensaje);
+
+            // Ocultar popup
+            popup.style.opacity = '0';
+            popup.style.transform = 'translateY(10px) scale(0.95)';
+            setTimeout(function() {
+              popup.style.display = 'none';
+            }, 150);
+          });
+
+          // Efectos hover
+          opcion.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(37, 211, 102, 0.2)';
+            this.style.transform = 'translateY(-1px)';
+            this.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.15)';
+          });
+
+          opcion.addEventListener('mouseleave', function() {
+            this.style.background = 'rgba(37, 211, 102, 0.1)';
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+          });
         });
       }
 
       // Función para abrir WhatsApp con datos específicos del vehículo
-      function abrirWhatsAppConVehiculo(vehicleData) {
-        var mensaje = generarMensajeWhatsApp(vehicleData);
+      function abrirWhatsAppConVehiculo(vehicleData, mensajePersonalizado) {
+        var mensaje = generarMensajeWhatsApp(vehicleData, mensajePersonalizado);
         var whatsappUrl = 'https://wa.me/' + WHATSAPP_NUMBER.replace(/\+/g, '') + '?text=' + mensaje;
 
         // Abrir en nueva ventana/tabla
@@ -1951,14 +2119,17 @@
         if (typeof gtag !== 'undefined') {
           gtag('event', 'whatsapp_contact', {
             event_category: 'engagement',
-            event_label: 'vehicle_chat_button',
-            vehicle_id: vehicleData.id || 'unknown'
+            event_label: mensajePersonalizado ? 'popup_option' : 'vehicle_chat_button',
+            vehicle_id: vehicleData && vehicleData.id ? vehicleData.id : 'unknown',
+            custom_message: mensajePersonalizado || 'vehicle_details'
           });
         }
       }
 
       // Exponer función global para uso desde otros módulos
-      window.abrirWhatsAppConVehiculo = abrirWhatsAppConVehiculo;
+      window.abrirWhatsAppConVehiculo = function(vehicleData, mensajePersonalizado) {
+        return abrirWhatsAppConVehiculo(vehicleData, mensajePersonalizado);
+      };
 
       // Inicializar widget
       configurarWhatsApp();
