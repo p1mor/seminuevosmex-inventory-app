@@ -39,7 +39,7 @@ SeminuevosMex Inventory App is a sophisticated, production-grade inventory manag
 - **Odoo QWeb Framework**: Fully compatible with Odoo's template system
 - **Bootstrap 5**: Native Bootstrap components with minimal overrides
 - **Schema.org Markup**: SEO-optimized structured data
-- **Tawk.to Integration**: Real-time chat support
+- **WhatsApp Integration**: Direct messaging with vehicle details
 - **Web Share API**: Built-in sharing capabilities with fallback support
 
 ---
@@ -271,15 +271,13 @@ npx http-server src/ -p 8000
 1. Minify CSS and JavaScript
 2. Optimize images in assets/
 3. Test on staging Odoo instance
-4. Verify all integrations (Tawk.to, analytics)
+4. Verify all integrations (WhatsApp, analytics)
 5. Update CDN references if applicable
 6. Deploy to production
 7. Monitor console for errors
 
 ### Environment Variables
-- **TAWK_PROPERTY_ID**: Tawk.to property identifier
-- **TAWK_WIDGET_ID**: Tawk.to widget identifier
-- **WHATSAPP_NUMBER**: WhatsApp business number (international format, e.g., +52551234567)
+- **WHATSAPP_NUMBER**: WhatsApp business number (international format, e.g., +5212215841832)
 - **CDN_BASE_URL**: Image CDN base URL
 
 ---
@@ -355,7 +353,7 @@ This project is proprietary and confidential. All rights reserved to SeminuevosM
 - **Odoo Framework**: For the QWeb templating system
 - **Bootstrap 5**: For responsive grid and components
 - **Google Fonts**: For Poppins typeface
-- **Tawk.to**: For customer support integration
+- **WhatsApp Business**: For direct customer messaging
 - **MDN Web Docs**: For Web APIs documentation
 
 ---

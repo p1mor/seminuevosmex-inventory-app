@@ -20,7 +20,7 @@
    - Responsive: móvil y escritorio, bottom sheet en mobile
    - Búsqueda inteligente multi-palabra, tags dinámicos
    - Galería de imágenes con lightbox moderno, SVG iconografía
-   - Acciones: chat (Tawk.to) y compartir (Web Share API + fallback)
+   - Acciones: chat (WhatsApp) y compartir (Web Share API + fallback)
    - UX: animaciones suaves, accesibilidad, sombreado de vistos/compartidos
    - Rendimiento optimizado: debouncing, requestAnimationFrame, lazy listeners
    - Mobile: interfaz táctil amigable, bottom sheet, iconos compactos
@@ -44,7 +44,7 @@
 15. SISTEMA FILTROS - aplicarFiltros(), verificarRangoPrecio(), verificarRangoKM()
 16. RENDERIZADO ADAPTATIVO - renderizar(), _buildRowData() [CONSOLIDADO], desktop/mobile
 17. INTERFAZ FILTROS - mostrarTagsFiltros(), limpiarFiltros(), removerTag()
-18. ACCIONES VEHÍCULOS - configurarAcciones(), configurarChat(), configurarCompartir()
+18. ACCIONES VEHÍCULOS - configurarAcciones(), configurarCompartir()
 19. URL SHARING - filterByCarIdFromURL(), compartirFallback(), deep linking
 20. LISTENERS GALERÍA - setGaleriaListeners() [NO DUPLICADO]
 21. PIXEL TRACKING - buildVehiclePixelData(), pixelTrack() [CONSOLIDADO 3→1+wrappers]
@@ -93,19 +93,6 @@
         // SISTEMA DE FILTROS
         // ==========================================
         filterPopover: null,
-
-        // ==========================================
-        // DETECCIÓN TAWK.TO Y ESTADO INICIAL
-        // ==========================================
-        _initTawk: (function () {
-            window.InventarioBigData = window.InventarioBigData || {};
-            window.InventarioBigData.chatReady = false;
-            window.Tawk_API = window.Tawk_API || {};
-            window.Tawk_API.onLoad = function() {
-                window.InventarioBigData.chatReady = true;
-            };
-            return null;
-        })(),
 
         // ==========================================
         // INICIALIZACIÓN
@@ -1464,66 +1451,8 @@
         // ACCIONES: CHAT Y COMPARTIR
         // ==========================================
         configurarAcciones: function () {
-            this.configurarChat();
+            // Chat ahora manejado por event listener global de WhatsApp
             this.configurarCompartir();
-        },
-
-        configurarChat: function () {
-            var self = this;
-            var buttons = document.querySelectorAll('.chat-btn');
-            Array.prototype.forEach.call(buttons, function (btn) {
-                if (btn._inventarioChatHandler) {
-                    try { btn.removeEventListener('click', btn._inventarioChatHandler); } catch (e) { /* ignore */ }
-                }
-                var handler = function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    try {
-                        var row = btn.closest('tr');
-                        if (!row) return;
-                        var producto = {
-                            id: String(row.getAttribute('data-id') || '').trim(),
-                            marca: (row.getAttribute('data-marca') || '').trim(),
-                            modelo: (row.getAttribute('data-modelo') || '').trim(),
-                            variante: (row.getAttribute('data-variante') || '').trim(),
-                            precio: (row.getAttribute('data-precio') || '').trim(),
-                            km: (row.getAttribute('data-km') || '').trim(),
-                            año: (row.getAttribute('data-año') || '').trim(),
-                            transmision: (row.getAttribute('data-transmision') || '').trim(),
-                            color: (row.getAttribute('data-color') || '').trim(),
-                            ubicacion: (row.getAttribute('data-ubicacion') || '').trim()
-                        };
-                        self.abrirChatConSuperTag(producto);
-                    } catch (err) { /* ignore */ }
-                    return false;
-                };
-                btn.addEventListener('click', handler);
-                btn._inventarioChatHandler = handler;
-            });
-        },
-
-        abrirChatConSuperTag: function (producto) {
-            try {
-                if (!producto) return;
-                if (!(window && window.Tawk_API && typeof window.Tawk_API.addTags === 'function')) return;
-
-                var etiqueta = [
-                    producto.id,
-                    producto.marca,
-                    producto.modelo,
-                    producto.variante,
-                    producto.año,
-                    producto.color,
-                    '$' + producto.precio,
-                    producto.km + 'km',
-                    producto.transmision,
-                    producto.ubicacion
-                ].filter(function (p) { return p && String(p).trim(); }).join(' | ');
-                if (etiqueta.length > 120) etiqueta = etiqueta.substring(0, 117) + '...';
-
-                window.Tawk_API.addTags([etiqueta]);
-                if (typeof window.Tawk_API.maximize === 'function') window.Tawk_API.maximize();
-            } catch (e) { /* silencioso */ }
         },
 
         configurarCompartir: function () {
@@ -1680,25 +1609,7 @@
             return colorMap[colorLower] || 'color-otro';
         },
 
-        // ==========================================
-        // UTILIDAD CHAT: SUPER ETIQUETA
-        // ==========================================
-        generarSuperEtiquetaChat: function (row) {
-            if (!row) return '';
-            var id = row.getAttribute('data-id') || '';
-            var marca = row.getAttribute('data-marca') || '';
-            var modelo = row.getAttribute('data-modelo') || '';
-            var variante = row.getAttribute('data-variante') || '';
-            var año = row.getAttribute('data-año') || '';
-            var precio = row.getAttribute('data-precio') || '';
-            var color = row.getAttribute('data-color') || '';
-            var km = row.getAttribute('data-km') || '';
-            var etiqueta = [id, marca, modelo, variante, año, color, '$' + parseInt(precio).toLocaleString(), km + 'km']
-                .filter(function (v) { return v && v.toString().trim(); })
-                .join(' | ');
-            if (etiqueta.length > 120) etiqueta = etiqueta.substring(0, 117) + '...';
-            return etiqueta;
-        },
+
 
         // ==========================================
         // UTILIDADES DE PROCESAMIENTO Y NORMALIZACIÓN
@@ -1893,6 +1804,26 @@
         var btn = e.target.closest('.chat-btn');
         if (btn) {
           var tr = btn.closest('tr');
+
+          // Extraer datos del vehículo de los atributos data-*
+          var vehicleData = {
+            id: tr.getAttribute('data-id'),
+            marca: tr.getAttribute('data-marca'),
+            modelo: tr.getAttribute('data-modelo'),
+            variante: tr.getAttribute('data-variante'),
+            precio: tr.getAttribute('data-precio'),
+            km: tr.getAttribute('data-km'),
+            color: tr.getAttribute('data-color'),
+            año: tr.getAttribute('data-año'),
+            ubicacion: tr.getAttribute('data-ubicacion')
+          };
+
+          // Abrir WhatsApp con datos del vehículo
+          if (window.abrirWhatsAppConVehiculo) {
+            window.abrirWhatsAppConVehiculo(vehicleData);
+          }
+
+          // Mantener tracking de Facebook Pixel
           pixelLead(tr);
         }
       });
@@ -1953,22 +1884,45 @@
     // =====================
     (function() {
       // Configuración WhatsApp
-      const WHATSAPP_NUMBER = '+52551234567'; // Número por defecto, configurable via env
+      const WHATSAPP_NUMBER = '+5212215841832'; // Número correcto: +52 1 221 584 1832
 
-      // Función para generar mensaje dinámico basado en contexto
-      function generarMensajeWhatsApp() {
+      // Función para generar mensaje dinámico basado en contexto o vehículo específico
+      function generarMensajeWhatsApp(vehicleData) {
         var mensaje = '¡Hola! Me interesa información sobre vehículos en SeminuevosMex.net';
 
-        // Detectar si hay un vehículo específico seleccionado
-        var urlParams = new URLSearchParams(window.location.search);
-        var vehicleId = urlParams.get('vehicle');
-        var marca = urlParams.get('marca');
-        var modelo = urlParams.get('modelo');
+        // Si se proporciona datos específicos del vehículo
+        if (vehicleData) {
+          var marca = vehicleData.marca || '';
+          var modelo = vehicleData.modelo || '';
+          var variante = vehicleData.variante || '';
+          var precio = vehicleData.precio || '';
+          var km = vehicleData.km || '';
+          var color = vehicleData.color || '';
+          var año = vehicleData.año || '';
+          var id = vehicleData.id || '';
+          var ubicacion = vehicleData.ubicacion || '';
 
-        if (vehicleId && marca && modelo) {
-          mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo + ' (ID: ' + vehicleId + ') que vi en SeminuevosMex.net. ¿Me pueden dar más información?';
-        } else if (marca && modelo) {
-          mensaje = '¡Hola! Me interesa información sobre ' + marca + ' ' + modelo + ' en SeminuevosMex.net. ¿Tienen unidades disponibles?';
+          mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo;
+          if (variante) mensaje += ' (' + variante + ')';
+          mensaje += ' por $' + precio;
+          if (km) mensaje += ', con ' + km + ' km';
+          if (color) mensaje += ', color ' + color;
+          if (año) mensaje += ', modelo ' + año;
+          if (ubicacion) mensaje += ', ubicado en ' + ubicacion;
+          mensaje += '. ¿Me pueden dar más información? Vi este vehículo en SeminuevosMex.net';
+          if (id) mensaje += ' (ID: ' + id + ')';
+        } else {
+          // Detectar si hay un vehículo específico seleccionado desde URL
+          var urlParams = new URLSearchParams(window.location.search);
+          var vehicleId = urlParams.get('vehicle');
+          var marca = urlParams.get('marca');
+          var modelo = urlParams.get('modelo');
+
+          if (vehicleId && marca && modelo) {
+            mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo + ' (ID: ' + vehicleId + ') que vi en SeminuevosMex.net. ¿Me pueden dar más información?';
+          } else if (marca && modelo) {
+            mensaje = '¡Hola! Me interesa información sobre ' + marca + ' ' + modelo + ' en SeminuevosMex.net. ¿Tienen unidades disponibles?';
+          }
         }
 
         return encodeURIComponent(mensaje);
@@ -1985,9 +1939,9 @@
         });
       }
 
-      // Función para abrir WhatsApp con mensaje
-      function abrirWhatsAppConMensaje() {
-        var mensaje = generarMensajeWhatsApp();
+      // Función para abrir WhatsApp con datos específicos del vehículo
+      function abrirWhatsAppConVehiculo(vehicleData) {
+        var mensaje = generarMensajeWhatsApp(vehicleData);
         var whatsappUrl = 'https://wa.me/' + WHATSAPP_NUMBER.replace(/\+/g, '') + '?text=' + mensaje;
 
         // Abrir en nueva ventana/tabla
@@ -1997,10 +1951,14 @@
         if (typeof gtag !== 'undefined') {
           gtag('event', 'whatsapp_contact', {
             event_category: 'engagement',
-            event_label: 'floating_widget'
+            event_label: 'vehicle_chat_button',
+            vehicle_id: vehicleData.id || 'unknown'
           });
         }
       }
+
+      // Exponer función global para uso desde otros módulos
+      window.abrirWhatsAppConVehiculo = abrirWhatsAppConVehiculo;
 
       // Inicializar widget
       configurarWhatsApp();
