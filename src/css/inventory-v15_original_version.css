@@ -591,14 +591,14 @@
   border: none;
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 16px !important;
+  font-size: 1rem !important;
   width: 100%;
   outline: none;
 }
 
 .search-input::placeholder {
   color: #ebebeb !important;
-  font-size: 13px !important;      /* Más pequeño */
+  font-size: 1rem !important;      /* Estandarizado */
   opacity: 0.9 !important;
   font-weight: 500;
 }
@@ -622,7 +622,7 @@
   padding: 0.4rem 0.8rem;
   font-weight: 600;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -665,7 +665,7 @@
   color: var(--white);
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -701,10 +701,19 @@
 .dense-table th, 
 .dense-table td {
   padding: 0.16rem 0.5rem !important;
-  font-size: 0.82rem !important;
+  font-size: 1rem !important;
   vertical-align: middle;
   border: none;
   background: transparent;
+}
+
+/* Uniformidad de tamaño de fuente en datos internos de columnas desktop */
+.dense-table .km-value,
+.dense-table .spec-text,
+.dense-table .inventory-cell--highlight,
+.dense-table .inventory-cell--color,
+.dense-table .col-tipo-auto {
+  font-size: 1rem !important;
 }
 .table-header {
     background: rgba(43, 41, 44, 0.337);
@@ -714,7 +723,7 @@
   .table-header th {
     color: #fff !important;
     font-weight: 600;
-    font-size: 0.75rem;
+  font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 2px solid var(--brand-purple);
@@ -753,7 +762,7 @@ tr.highlighted-shared.viewed-row {
 /* Adaptación móvil de la tabla */
 @media (max-width: 768px) {
   .mobile-table {
-    font-size: 0.75rem;
+  font-size: 1rem;
     table-layout: fixed;
     width: 100%;
     background: transparent !important;
@@ -764,7 +773,7 @@ tr.highlighted-shared.viewed-row {
   .mobile-table th,
   .mobile-table td {
     padding: 0.12rem 0.1rem !important;
-    font-size: 0.68rem !important;
+      font-size: 1rem !important;
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -775,30 +784,30 @@ tr.highlighted-shared.viewed-row {
   }
   /* CAMBIO TAMAÑO DE FUENTE TITULO VEHICULO VERSION MOVIL */
   .mobile-table .vehicle-name {
-    font-size: 0.70rem !important;   /* Tamaño más pequeño */
+  font-size: 1rem !important;   /* Estandarizado */
     font-weight: 700 !important;     /* Negrita forzada */
     white-space: normal;
     line-height: 1.1;
   }
   .mobile-table .vehicle-details {
-    font-size: 0.55rem !important;
+  font-size: 1rem !important;
     white-space: normal;
   }
   .mobile-table .precio-actual { font-size: 0.7rem; font-weight: 600; }
   .mobile-table .precio-original { font-size: 0.6rem; }
-  .mobile-table .km-value { font-size: 0.65rem; }
+    .mobile-table .km-value { font-size: 0.55rem !important; }
   .mobile-table .color-badge { font-size: 0.6rem; padding: 0.125rem 0.375rem; }
 }
 /* Título del vehículo en tabla version escritorio */
 .vehicle-name {
-  font-size: 1.02rem; 
+  font-size: 1rem; 
   font-weight: 700; 
   line-height: 1.13;
   color: #fff; 
   letter-spacing: -0.01em;
 }
 .dense-table .vehicle-name {
-  font-size: 1.02rem;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.13;
   color: #fff;
@@ -816,7 +825,7 @@ tr.highlighted-shared.viewed-row {
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   font-weight: 600 !important;
-  font-size: 0.7rem;
+  font-size: 1rem;
   text-shadow: 0 1px 2px rgba(0,0,0,0.3);
   box-shadow: 0 2px 4px rgba(124, 58, 237, 0.3);
 }
@@ -826,7 +835,7 @@ tr.highlighted-shared.viewed-row {
   padding: 0.2rem 0.5rem;
   border-radius: 12px;
   font-weight: 600 !important;
-  font-size: 0.7rem;
+  font-size: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 /* BADGES de color dinámicos y bordes */
@@ -900,6 +909,7 @@ tr.highlighted-shared.viewed-row {
 .precio-financiado-label {
   display: block;
   font-size: 0.65rem;
+  font-size: 1rem;
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -938,7 +948,7 @@ tr.highlighted-shared.viewed-row {
   .mobile-table .vehicle-details { font-size: 0.55rem !important; white-space: normal; }
   .mobile-table .precio-actual { font-size: 0.7rem; font-weight: 600; }
   .mobile-table .precio-original { font-size: 0.6rem; }
-  .mobile-table .km-value { font-size: 0.65rem; }
+    .mobile-table .km-value { font-size: 0.55rem; }
   .mobile-table .color-badge { font-size: 0.6rem; padding: 0.125rem 0.375rem; }
   .mobile-filter-header-btn { font-size: 0.7rem; padding: 0.25rem; }
   .mobile-filter-header-btn svg { width: 12px; height: 12px; }

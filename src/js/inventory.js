@@ -1103,15 +1103,24 @@
 
         aplicarOrdenamiento: function () {
             var campo = this.ordenActual;
-            this.vehiculosFiltrados.sort(function (a, b) {
-                if (campo === 'precio' || campo === 'km' || campo === 'año') {
-                    return a[campo] - b[campo];
-                } else {
-                    var aVal = (a[campo] || '').toString().toLowerCase();
-                    var bVal = (b[campo] || '').toString().toLowerCase();
-                    return aVal.localeCompare(bVal);
-                }
-            });
+            if (campo === 'precioPorKm') {
+                // Ordenar por precio/km (más barato por km primero)
+                this.vehiculosFiltrados.sort(function (a, b) {
+                    var aRatio = a.km > 0 ? a.precio / a.km : a.precio;
+                    var bRatio = b.km > 0 ? b.precio / b.km : b.precio;
+                    return aRatio - bRatio;
+                });
+            } else {
+                this.vehiculosFiltrados.sort(function (a, b) {
+                    if (campo === 'precio' || campo === 'km' || campo === 'año') {
+                        return a[campo] - b[campo];
+                    } else {
+                        var aVal = (a[campo] || '').toString().toLowerCase();
+                        var bVal = (b[campo] || '').toString().toLowerCase();
+                        return aVal.localeCompare(bVal);
+                    }
+                });
+            }
         },
 
         verificarRangoPrecio: function (precio, rango) {
@@ -1390,13 +1399,11 @@
             document.querySelectorAll('.sort-btn').forEach(function (btn) {
                 btn.classList.remove('active', 'btn-primary');
                 btn.classList.add('btn-outline-primary');
-            });
-
-            var activeButton = document.querySelector('.sort-btn[data-sort="' + this.ordenActual + '"]');
-            if (activeButton) {
-                activeButton.classList.add('active', 'btn-primary');
-                activeButton.classList.remove('btn-outline-primary');
-            }
+                if (btn.getAttribute('data-sort') === this.ordenActual) {
+                    btn.classList.add('active', 'btn-primary');
+                    btn.classList.remove('btn-outline-primary');
+                }
+            }, this);
         },
 
         mostrarTagsFiltros: function () {
@@ -1939,6 +1946,65 @@
 
       // Accesibilidad: foco inicial en modal
       modal.setAttribute('tabindex', '-1');
+    })();
+
+    // =====================
+    // WIDGET FLOTANTE WHATSAPP
+    // =====================
+    (function() {
+      // Configuración WhatsApp
+      const WHATSAPP_NUMBER = '+52551234567'; // Número por defecto, configurable via env
+
+      // Función para generar mensaje dinámico basado en contexto
+      function generarMensajeWhatsApp() {
+        var mensaje = '¡Hola! Me interesa información sobre vehículos en SeminuevosMex.net';
+
+        // Detectar si hay un vehículo específico seleccionado
+        var urlParams = new URLSearchParams(window.location.search);
+        var vehicleId = urlParams.get('vehicle');
+        var marca = urlParams.get('marca');
+        var modelo = urlParams.get('modelo');
+
+        if (vehicleId && marca && modelo) {
+          mensaje = '¡Hola! Me interesa el ' + marca + ' ' + modelo + ' (ID: ' + vehicleId + ') que vi en SeminuevosMex.net. ¿Me pueden dar más información?';
+        } else if (marca && modelo) {
+          mensaje = '¡Hola! Me interesa información sobre ' + marca + ' ' + modelo + ' en SeminuevosMex.net. ¿Tienen unidades disponibles?';
+        }
+
+        return encodeURIComponent(mensaje);
+      }
+
+      // Función para configurar WhatsApp
+      function configurarWhatsApp() {
+        var btn = document.getElementById('whatsapp-floating-widget');
+        if (!btn) return;
+
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          abrirWhatsAppConMensaje();
+        });
+      }
+
+      // Función para abrir WhatsApp con mensaje
+      function abrirWhatsAppConMensaje() {
+        var mensaje = generarMensajeWhatsApp();
+        var whatsappUrl = 'https://wa.me/' + WHATSAPP_NUMBER.replace(/\+/g, '') + '?text=' + mensaje;
+
+        // Abrir en nueva ventana/tabla
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+
+        // Tracking opcional (puedes integrar con analytics)
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'whatsapp_contact', {
+            event_category: 'engagement',
+            event_label: 'floating_widget'
+          });
+        }
+      }
+
+      // Inicializar widget
+      configurarWhatsApp();
+
     })();
 
 })();

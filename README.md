@@ -279,6 +279,7 @@ npx http-server src/ -p 8000
 ### Environment Variables
 - **TAWK_PROPERTY_ID**: Tawk.to property identifier
 - **TAWK_WIDGET_ID**: Tawk.to widget identifier
+- **WHATSAPP_NUMBER**: WhatsApp business number (international format, e.g., +52551234567)
 - **CDN_BASE_URL**: Image CDN base URL
 
 ---
